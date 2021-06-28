@@ -109,16 +109,9 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 	}
 	employeeDetails, err := eCtrl.employeeRepository.FindById(ID)
 	if err == nil {
-		if updateEmployee.FirstName != "" {
-			employeeDetails.FirstName = updateEmployee.FirstName
-		}
-		if updateEmployee.LastName != "" {
-			employeeDetails.LastName = updateEmployee.LastName
-		}
-		if updateEmployee.SecondLastName != "" {
-			employeeDetails.SecondLastName = updateEmployee.SecondLastName
-		}
-
+		employeeDetails.FirstName = updateEmployee.FirstName
+		employeeDetails.LastName = updateEmployee.LastName
+		employeeDetails.SecondLastName = updateEmployee.SecondLastName
 		employeeDetails.DateOfBirth = updateEmployee.DateOfBirth
 		employeeDetails.DateOfEmployment = updateEmployee.DateOfEmployment
 		employeeDetails.Status = updateEmployee.Status
