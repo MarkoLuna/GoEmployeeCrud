@@ -11,9 +11,38 @@ spec:
       imagePullPolicy: IfNotPresent
       ports:
         - containerPort: 8080
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthcheck/
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 15
+        successThreshold: 1
+        timeoutSeconds: 15
+      readinessProbe:
+        httpGet:
+          path: /healthcheck/
+          port: 8080
+        initialDelaySeconds: 3
+        periodSeconds: 3
+      startupProbe:
+        httpGet:
+          path: /healthcheck/
+          port: 8080
+        failureThreshold: 30
+        periodSeconds: 10
+      resources:
+        limits:
+          cpu: "1"
+          memory: 4Gi
+        requests:
+          cpu: 10m
+          memory: 1Gi
       env:
         - name: SERVER_PORT
-          value: "8000"
+          value: "8080"
         - name: SERVER_HOST
           value: "0.0.0.0"
         - name: DB_HOST

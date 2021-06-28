@@ -34,3 +34,10 @@ docker-run: docker-build
 docker-compose-run: docker-build
 	docker-compose up
 
+k8-apply: docker-build
+	kubectl apply -f k8s/pod.yaml
+	kubectl apply -f k8s/service.yaml
+
+k8-remove:
+	kubectl delete pod employeecrud-pod
+	kubectl delete service employeecrud-service

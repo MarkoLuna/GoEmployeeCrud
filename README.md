@@ -3,32 +3,47 @@
 Employee Crud Rest API using Golang
 
 ## Run on local
+
 ```
 $ go run cmd/server/main.go
 ```
 
 Or with make
+
 ```
 $ make run
 ```
 
-## Run with docker 
+## Run with docker
+
 ```
 $ make docker-run
 ```
 
 ## Run with docker compose
+
 ```
 $ make docker-compose-run
 ```
 
 ## healthcheck
+
 ```
 $ curl -X GET http://localhost:8080/healthcheck/
 OK
 ```
 
+## Run in k8 locally
+
+```
+$ make k8-apply
+$ kubectl exec -it employeecrud-pod -- apk add curl
+$ kubectl exec -it employeecrud-pod -- curl -X GET http://employeecrud-service:8080/healthcheck/
+$ make k8-remove 
+```
+
 ## Example Curls
+
 ```
 # get all employees
 $ curl http://localhost:8080/api/employee/
