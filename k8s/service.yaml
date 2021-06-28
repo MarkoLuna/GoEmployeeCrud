@@ -10,4 +10,4 @@ spec:
       port: 8080
       targetPort: 8080
 
-# k apply -f k8s/service.yaml
+# kubectl apply -f k8s/service.yaml
