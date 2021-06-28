@@ -34,7 +34,7 @@ func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
 	employeesSlice := make([]models.Employee, 0)
-	err = json.Unmarshal([]byte(rr.Body.String()), &employeesSlice)
+	err = json.Unmarshal(rr.Body.Bytes(), &employeesSlice)
 	assert.NoError(t, err)
 
 	assert.Equal(t, 2, len(employeesSlice), "handler returned unexpected body: got empty")
@@ -81,7 +81,7 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
 	employeeResponse := models.Employee{}
-	err = json.Unmarshal([]byte(rr.Body.String()), &employeeResponse)
+	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, employeeResponse)
@@ -111,7 +111,7 @@ func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
 	employeeResponse := models.Employee{}
-	err = json.Unmarshal([]byte(rr.Body.String()), &employeeResponse)
+	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
 	assert.NoError(t, err)
 
@@ -152,7 +152,7 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
 	employeeResponse := models.Employee{}
-	err = json.Unmarshal([]byte(rr.Body.String()), &employeeResponse)
+	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
 	assert.NoError(t, err)
 
