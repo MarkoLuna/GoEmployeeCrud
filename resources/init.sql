@@ -1,5 +1,5 @@
 CREATE TABLE employees (
-  id_employee SERIAL PRIMARY KEY,
+  id_employee TEXT PRIMARY KEY,
   first_name TEXT,
   last_name TEXT,
   second_last_name TEXT,

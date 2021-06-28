@@ -30,7 +30,7 @@ func InitServer(dbConnection *sql.DB) {
 }
 
 var e = &models.Employee{
-	Id:               1,
+	Id:               "1",
 	FirstName:        "Marcos",
 	LastName:         "Luna",
 	SecondLastName:   "Valdez",
@@ -78,7 +78,7 @@ func TestFindById(t *testing.T) {
 
 	sqlMock.ExpectQuery(query).WithArgs(e.Id).WillReturnRows(rows)
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	resp := makeRequest("GET", url, nil)
 	defer resp.Body.Close()
 

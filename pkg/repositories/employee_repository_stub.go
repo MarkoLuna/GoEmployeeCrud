@@ -23,7 +23,7 @@ func (er EmployeeRepositoryStub) FindAll() ([]models.Employee, error) {
 	employeesSlice := make([]models.Employee, 0)
 
 	var employee models.Employee
-	employee.Id = 1
+	employee.Id = "1"
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"
@@ -34,7 +34,7 @@ func (er EmployeeRepositoryStub) FindAll() ([]models.Employee, error) {
 	employeesSlice = append(employeesSlice, employee)
 
 	var employee2 models.Employee
-	employee2.Id = 2
+	employee2.Id = "2"
 	employee2.FirstName = "Gerardo"
 	employee2.LastName = "Luna"
 	employee2.SecondLastName = "Valdez"
@@ -47,7 +47,7 @@ func (er EmployeeRepositoryStub) FindAll() ([]models.Employee, error) {
 	return employeesSlice, nil
 }
 
-func (er EmployeeRepositoryStub) FindById(ID int64) (models.Employee, error) {
+func (er EmployeeRepositoryStub) FindById(ID string) (models.Employee, error) {
 
 	var employee models.Employee
 	employee.Id = ID
@@ -61,7 +61,7 @@ func (er EmployeeRepositoryStub) FindById(ID int64) (models.Employee, error) {
 	return employee, nil
 }
 
-func (er EmployeeRepositoryStub) DeleteById(ID int64) (int64, error) {
+func (er EmployeeRepositoryStub) DeleteById(ID string) (int64, error) {
 	return 1, nil
 }
 

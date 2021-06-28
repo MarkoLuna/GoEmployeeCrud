@@ -18,7 +18,7 @@ import (
 )
 
 var e = &models.Employee{
-	Id:               1,
+	Id:               "1",
 	FirstName:        "Marcos",
 	LastName:         "Luna",
 	SecondLastName:   "Valdez",
@@ -138,18 +138,19 @@ func TestEmployeeRepositoryImpl_Create(t *testing.T) {
 
 	query := `
 	INSERT INTO employees \(
+		id_employee\,
 		first_name\,
 		last_name\,
 		second_last_name\,
 		date_of_birth\,
 		date_of_employment\,
 		status\)
-	VALUES \(\$1\, \$2\, \$3\, \$4\, \$5\, \$6\)
+	VALUES \(\$1\, \$2\, \$3\, \$4\, \$5\, \$6\, \$7\)
 	RETURNING id_employee`
 
 	rows := sqlmock.NewRows([]string{"id_employee"}).AddRow(1)
 
-	mock.ExpectQuery(query).WithArgs(e.FirstName, e.LastName, e.SecondLastName,
+	mock.ExpectQuery(query).WithArgs(e.Id, e.FirstName, e.LastName, e.SecondLastName,
 		e.DateOfBirth, e.DateOfEmployment, e.Status).WillReturnRows(rows)
 
 	_, err := repo.Create(*e)

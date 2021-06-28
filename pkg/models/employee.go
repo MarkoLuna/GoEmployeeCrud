@@ -9,7 +9,7 @@ import (
 )
 
 type Employee struct {
-	Id               int64
+	Id               string
 	FirstName        string                   `json:"firstName" validate:"required"`
 	LastName         string                   `json:"lastName" validate:"required"`
 	SecondLastName   string                   `json:"secondLastName" validate:"required"`

@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -26,7 +26,6 @@ func NewEmployeeController(employeeRepository repositories.EmployeeRepository) E
 func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	employee := &models.Employee{}
 	utils.ParseBody(r.Body, employee)
-	log.Println("employee: " + employee.ToString())
 
 	v := utils.CreateValidator()
 	err := v.Struct(employee)
@@ -39,8 +38,11 @@ func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	employee.Id = uuid.New().String()
+	log.Println("employee: " + employee.ToString())
 	b, err := eCtrl.employeeRepository.Create(*employee)
 	if err != nil {
+		log.Fatalln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,13 +69,7 @@ func (eCtrl EmployeeController) GetEmployees(w http.ResponseWriter, r *http.Requ
 func (eCtrl EmployeeController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	EmployeeId := vars["employeeId"]
-	ID, err := strconv.ParseInt(EmployeeId, 0, 0)
-	if err != nil {
-		log.Println("Error while parsing")
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	EmployeeDetails, err := eCtrl.employeeRepository.FindById(ID)
+	EmployeeDetails, err := eCtrl.employeeRepository.FindById(EmployeeId)
 	if err == nil {
 		res, _ := json.Marshal(EmployeeDetails)
 		w.Header().Set("Content-Type", "application/json")
@@ -103,11 +99,7 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 
 	vars := mux.Vars(r)
 	EmployeeId := vars["employeeId"]
-	ID, err := strconv.ParseInt(EmployeeId, 0, 0)
-	if err != nil {
-		log.Println("Error while parsing")
-	}
-	employeeDetails, err := eCtrl.employeeRepository.FindById(ID)
+	employeeDetails, err := eCtrl.employeeRepository.FindById(EmployeeId)
 	if err == nil {
 		employeeDetails.FirstName = updateEmployee.FirstName
 		employeeDetails.LastName = updateEmployee.LastName
@@ -135,12 +127,8 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 func (eCtrl EmployeeController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	EmployeeId := vars["employeeId"]
-	ID, err := strconv.ParseInt(EmployeeId, 0, 0)
-	if err != nil {
-		log.Println("Error while parsing")
-	}
 
-	count, _ := eCtrl.employeeRepository.DeleteById(ID)
+	count, _ := eCtrl.employeeRepository.DeleteById(EmployeeId)
 	if count > 0 {
 		w.WriteHeader(http.StatusOK)
 	} else {

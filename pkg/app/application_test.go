@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"testing"
 	"time"
 
@@ -42,7 +44,7 @@ func InitServer(db_connection *sql.DB) {
 }
 
 var e = &models.Employee{
-	Id:               1,
+	Id:               "1",
 	FirstName:        "Marcos",
 	LastName:         "Luna",
 	SecondLastName:   "Valdez",
@@ -52,13 +54,26 @@ var e = &models.Employee{
 }
 
 var invalidEmployee = &models.Employee{
-	Id:               1,
+	Id:               "1",
 	FirstName:        "",
 	LastName:         "",
 	SecondLastName:   "",
 	DateOfBirth:      time.Date(1994, time.April, 25, 8, 0, 0, 0, time.UTC),
 	DateOfEmployment: time.Now().UTC(),
 	Status:           "",
+}
+
+type AnyUUID struct{}
+
+// Match satisfies sqlmock.Argument interface
+func (a AnyUUID) Match(v driver.Value) bool {
+	value, ok := v.(string)
+	if ok {
+		r := regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
+		fmt.Println("value: " + value)
+		return r.MatchString(value)
+	}
+	return false
 }
 
 func NewMock() (*sql.DB, sqlmock.Sqlmock) {
@@ -107,7 +122,7 @@ func TestFindById(t *testing.T) {
 
 	sqlMock.ExpectQuery(query).WithArgs(e.Id).WillReturnRows(rows)
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	resp := makeRequest("GET", url, nil)
 	defer resp.Body.Close()
 
@@ -141,7 +156,7 @@ func TestEmployeeRepositoryImpl_FindByIdError(t *testing.T) {
 
 	sqlMock.ExpectQuery(query).WithArgs(e.Id).WillReturnRows(rows)
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	resp := makeRequest("GET", url, nil)
 	defer resp.Body.Close()
 
@@ -216,18 +231,19 @@ func TestEmployeeRepositoryImpl_Create(t *testing.T) {
 
 	query := `
 	INSERT INTO employees \(
+		id_employee\,
 		first_name\,
 		last_name\,
 		second_last_name\,
 		date_of_birth\,
 		date_of_employment\,
 		status\)
-	VALUES \(\$1\, \$2\, \$3\, \$4\, \$5\, \$6\)
+	VALUES \(\$1\, \$2\, \$3\, \$4\, \$5\, \$6\, \$7\)
 	RETURNING id_employee`
 
 	rows := sqlmock.NewRows([]string{"id_employee"}).AddRow(1)
 
-	sqlMock.ExpectQuery(query).WithArgs(e.FirstName, e.LastName, e.SecondLastName,
+	sqlMock.ExpectQuery(query).WithArgs(AnyUUID{}, e.FirstName, e.LastName, e.SecondLastName,
 		e.DateOfBirth, e.DateOfEmployment, e.Status).WillReturnRows(rows)
 
 	url := fmt.Sprintf("%s/api/employee/", basePath)
@@ -243,7 +259,7 @@ func TestEmployeeRepositoryImpl_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, employeeResponse)
 
-	assert.Equal(t, int64(1), employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, e.FirstName, employeeResponse.FirstName, "FirstName employee returned is wrong")
 }
 
 func TestEmployeeRepositoryImpl_CreateAndGetInvalidInput(t *testing.T) {
@@ -289,7 +305,7 @@ func TestEmployeeRepositoryImpl_Update(t *testing.T) {
 	sqlMock.ExpectExec(query_update).WithArgs(e.Id, e.FirstName, e.LastName, e.SecondLastName,
 		e.DateOfBirth, e.DateOfEmployment, e.Status).WillReturnResult(sqlmock.NewResult(0, 1))
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("PUT", url, bytes.NewBuffer(jsonStr))
 
@@ -302,7 +318,7 @@ func TestEmployeeRepositoryImpl_Update(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, employeeResponse)
 
-	assert.Equal(t, int64(1), employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
 }
 
 func TestEmployeeRepositoryImpl_UpdateErr(t *testing.T) {
@@ -325,7 +341,7 @@ func TestEmployeeRepositoryImpl_UpdateErr(t *testing.T) {
 
 	sqlMock.ExpectQuery(query_select).WithArgs(e.Id).WillReturnRows(rows_select)
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("PUT", url, bytes.NewBuffer(jsonStr))
 
@@ -337,7 +353,7 @@ func TestEmployeeRepositoryImpl_DeleteById(t *testing.T) {
 	query := `DELETE FROM employees WHERE id_employee = \$1\;`
 	sqlMock.ExpectExec(query).WithArgs(e.Id).WillReturnResult(sqlmock.NewResult(0, 1))
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	resp := makeRequest("DELETE", url, nil)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode, "handler returned wrong status code")
@@ -348,7 +364,7 @@ func TestEmployeeRepositoryStub_DeleteByIdError(t *testing.T) {
 	query := `DELETE FROM employees WHERE id_employee = \$1\;`
 	sqlMock.ExpectExec(query).WithArgs(e.Id).WillReturnResult(sqlmock.NewResult(0, 0))
 
-	url := fmt.Sprintf("%s/api/employee/%d", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
 	resp := makeRequest("DELETE", url, nil)
 
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode, "handler returned wrong status code")

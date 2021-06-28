@@ -19,16 +19,17 @@ func (er EmployeeRepositoryImpl) Create(e models.Employee) (*models.Employee, er
 
 	sqlStatement := `
 		INSERT INTO employees (
+			id_employee,
 			first_name, 
 			last_name, 
 			second_last_name, 
 			date_of_birth,
 			date_of_employment, 
 			status)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id_employee`
 
-	err := er.db.QueryRow(sqlStatement, e.FirstName, e.LastName, e.SecondLastName,
+	err := er.db.QueryRow(sqlStatement, e.Id, e.FirstName, e.LastName, e.SecondLastName,
 		e.DateOfBirth, e.DateOfEmployment, e.Status).Scan(&e.Id)
 
 	if err != nil {
@@ -78,7 +79,7 @@ func (er EmployeeRepositoryImpl) FindAll() ([]models.Employee, error) {
 	return employeesSlice, nil
 }
 
-func (er EmployeeRepositoryImpl) FindById(ID int64) (models.Employee, error) {
+func (er EmployeeRepositoryImpl) FindById(ID string) (models.Employee, error) {
 
 	var employee models.Employee
 	userSql := `select
@@ -107,7 +108,7 @@ func (er EmployeeRepositoryImpl) FindById(ID int64) (models.Employee, error) {
 	return employee, nil
 }
 
-func (er EmployeeRepositoryImpl) DeleteById(ID int64) (int64, error) {
+func (er EmployeeRepositoryImpl) DeleteById(ID string) (int64, error) {
 
 	sqlStatement := `DELETE FROM employees WHERE id_employee = $1;`
 

@@ -26,7 +26,7 @@ func TestRegisterEmployeeStoreRoutes(t *testing.T) {
 	RegisterEmployeeStoreRoutes(router, &employeeController)
 
 	var employee models.Employee
-	employee.Id = 1
+	employee.Id = "1"
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"

@@ -48,8 +48,8 @@ func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 	fmt.Println(employee1)
 	fmt.Println(employee2)
 
-	assert.Equal(t, int64(1), employee1.Id, "id employee returned is wrong")
-	assert.Equal(t, int64(2), employee2.Id, "id employee returned is wrong")
+	assert.Equal(t, "1", employee1.Id, "id employee returned is wrong")
+	assert.Equal(t, "2", employee2.Id, "id employee returned is wrong")
 }
 
 func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
@@ -58,7 +58,6 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	employeeController := NewEmployeeController(employeeRepository)
 
 	var employee models.Employee
-	employee.Id = 1
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"
@@ -87,7 +86,7 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	assert.NotNil(t, employeeResponse)
 	fmt.Println(employeeResponse)
 
-	assert.Equal(t, int64(1), employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, employee.FirstName, employeeResponse.FirstName, "FirstName employee returned is wrong")
 }
 
 func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
@@ -118,7 +117,7 @@ func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 	assert.NotNil(t, employeeResponse)
 	fmt.Println(employeeResponse)
 
-	assert.Equal(t, int64(1), employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
 }
 
 func TestEmployeeController_UpdateEmployee(t *testing.T) {
@@ -127,7 +126,7 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 	employeeController := NewEmployeeController(employeeRepository)
 
 	var employee models.Employee
-	employee.Id = 1
+	employee.Id = "1"
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"
@@ -159,7 +158,7 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 	assert.NotNil(t, employeeResponse)
 	fmt.Println(employeeResponse)
 
-	assert.Equal(t, int64(1), employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
 }
 
 func TestEmployeeController_DeleteEmployee(t *testing.T) {

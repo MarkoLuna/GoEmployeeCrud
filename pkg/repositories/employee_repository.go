@@ -9,9 +9,9 @@ type EmployeeRepository interface {
 
 	FindAll() ([]models.Employee, error)
 
-	FindById(ID int64) (models.Employee, error)
+	FindById(ID string) (models.Employee, error)
 
-	DeleteById(ID int64) (int64, error)
+	DeleteById(ID string) (int64, error)
 
 	Update(e models.Employee) (int64, error)
 }
