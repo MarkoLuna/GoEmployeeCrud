@@ -25,5 +25,5 @@ func main() {
 
 	defer App.DbConnection.Close()
 
-	App.StartServer()
+	App.Run()
 }

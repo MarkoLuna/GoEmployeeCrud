@@ -90,7 +90,7 @@ func TestMain(m *testing.M) {
 	sqlMock = mock
 	dbConnection = db
 	InitServer(dbConnection)
-	go App.StartServer()
+	go App.Run()
 
 	code := m.Run()
 	shutdown()

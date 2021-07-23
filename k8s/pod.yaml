@@ -57,6 +57,12 @@ spec:
           value: "users_db"
         - name: DB_DRIVER_NAME
           value: "postgres"
+        - name: SERVER_SSL_ENABLED
+          value: "true"
+        - name: SERVER_SSL_CERT_FILE_PATH
+          value: "/dist/ssl/cert.pem"
+	      - name: SERVER_SSL_KEY_FILE_PATH
+          value: "/dist/ssl/key.pem"
 
 # kubectl apply -f k8s/pod.yaml
 

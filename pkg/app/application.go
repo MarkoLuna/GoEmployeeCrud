@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
@@ -24,11 +25,42 @@ func (app *Application) RegisterRoutes() {
 	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
 }
 
-func (app *Application) StartServer() {
-	http.Handle("/", app.Router)
+func (app *Application) Address() string {
 	port := utils.GetEnv("SERVER_PORT", "8080")
 	host := utils.GetEnv("SERVER_HOST", "0.0.0.0")
-	log.Println("Starting server on port:", port)
 
-	log.Fatal(http.ListenAndServe(host+":"+port, app.Router))
+	return host + ":" + port
+}
+
+func (app *Application) HandleRoutes() {
+	http.Handle("/", app.Router)
+}
+
+func (app *Application) StartServer() {
+	app.HandleRoutes()
+	address := app.Address()
+	log.Println("Starting server on:", address)
+
+	log.Fatal(http.ListenAndServe(address, app.Router))
+}
+
+func (app *Application) StartSecureServer() {
+	app.HandleRoutes()
+	address := app.Address()
+	log.Println("Starting server on:", address)
+
+	path := "/Users/marcos.luna/go-projects/GoEmployeeCrud"
+	certFile := utils.GetEnv("SERVER_SSL_CERT_FILE_PATH", path+"/resources/ssl/cert.pem")
+	keyFile := utils.GetEnv("SERVER_SSL_KEY_FILE_PATH", path+"/resources/ssl/key.pem")
+	log.Fatal(http.ListenAndServeTLS(address, certFile, keyFile, app.Router))
+}
+
+func (app *Application) Run() {
+	server_ssl_enabled := utils.GetEnv("SERVER_SSL_ENABLED", "false")
+	ssl_enabled, _ := strconv.ParseBool(server_ssl_enabled)
+	if ssl_enabled {
+		app.StartSecureServer()
+	} else {
+		app.StartServer()
+	}
 }
