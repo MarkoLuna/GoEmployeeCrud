@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	host     = utils.GetEnv("DB_HOST", "localhost")
-	port     = utils.GetEnv("DB_PORT", "5432")
-	user     = utils.GetEnv("DB_USER", "postgres_user")
-	password = utils.GetEnv("DB_PASSWORD", "userspw")
-	dbname   = utils.GetEnv("DB_NAME", "users_db")
+	host       = utils.GetEnv("DB_HOST", "localhost")
+	port       = utils.GetEnv("DB_PORT", "5432")
+	user       = utils.GetEnv("DB_USER", "postgres_user")
+	password   = utils.GetEnv("DB_PASSWORD", "userspw")
+	dbname     = utils.GetEnv("DB_NAME", "users_db")
+	driverName = utils.GetEnv("DB_DRIVER_NAME", "postgres")
 )
 
 var (
@@ -23,10 +24,10 @@ var (
 
 // this method connects to postgres db using the singleton pattern
 func connect() {
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		log.Fatal(err)
 	}

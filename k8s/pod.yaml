@@ -55,6 +55,8 @@ spec:
           value: "userspw"
         - name: DB_NAME
           value: "users_db"
+        - name: DB_DRIVER_NAME
+          value: "postgres"
 
 # kubectl apply -f k8s/pod.yaml
 
