@@ -11,6 +11,9 @@ test:
 test-cover:
 	go test -cover "${PROJECT}/..."
 
+vet:
+	go vet "${PROJECT}/..."
+
 test-total-cover:
 	go test "${PROJECT}/..." -coverprofile cover.out > /dev/null
 	go tool cover -func cover.out
