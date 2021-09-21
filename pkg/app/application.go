@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
+	_ "github.com/MarkoLuna/GoEmployeeCrud/pkg/docs"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/routes"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"

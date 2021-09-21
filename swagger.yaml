@@ -1,0 +1,145 @@
+consumes:
+- application/json
+definitions:
+  EmployeeStatus:
+    description: This model represents the employee status for this application.
+    title: Employee Status
+    type: string
+    x-go-package: github.com/MarkoLuna/GoEmployeeCrud/pkg/constants
+  employeeData:
+    description: This model represents the Employee data structure for this application.
+    properties:
+      Id:
+        description: The id for this employee
+        example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+        type: string
+      dateOfBirth:
+        description: The date of birth for employee
+        example: "1994-04-25T12:00:00Z"
+        format: date-time
+        type: string
+        x-go-name: DateOfBirth
+      dateOfEmployment:
+        description: The date of employment for employee
+        example: "1994-04-25T12:00:00Z"
+        format: date-time
+        type: string
+        x-go-name: DateOfEmployment
+      firstName:
+        description: The firstname for employee
+        minLength: 1
+        type: string
+        x-go-name: FirstName
+      lastName:
+        description: The lastname for employee
+        minLength: 1
+        type: string
+        x-go-name: LastName
+      secondLastName:
+        description: The second last name for employee
+        minLength: 1
+        type: string
+        x-go-name: SecondLastName
+      status:
+        $ref: '#/definitions/EmployeeStatus'
+    required:
+    - firstName
+    - lastName
+    - secondLastName
+    - dateOfBirth
+    - dateOfEmployment
+    - status
+    title: Employee
+    type: object
+    x-go-name: Employee
+    x-go-package: github.com/MarkoLuna/GoEmployeeCrud/pkg/models
+host: localhost:8080
+info:
+  contact:
+    email: josemarcosluna9@gmail.com
+    name: Marcos Luna
+  description: |-
+    Employee Crud RESTful APIs in golang.
+    API for create, read, update and delete employees.
+  title: Employee API.
+  version: 1.0.0
+paths:
+  /api/employee/:
+    get:
+      consumes:
+      - application/json
+      operationId: getEmployees
+      produces:
+      - application/json
+      - Information of the Employee created.
+      responses:
+        "200":
+          description: employeeData
+          schema:
+            $ref: '#/definitions/employeeData'
+      summary: Get Employee list.
+    post:
+      consumes:
+      - application/json
+      operationId: createEmployee
+      produces:
+      - application/json
+      - Information of the Employee created.
+      responses:
+        "200":
+          description: employeeData
+          schema:
+            $ref: '#/definitions/employeeData'
+      summary: Create a new Employee.
+  /api/employee/{employeeId}:
+    delete:
+      consumes:
+      - application/json
+      operationId: deleteEmployeeById
+      produces:
+      - application/json
+      - Information of the Employee created.
+      responses:
+        "200":
+          description: employeeData
+          schema:
+            $ref: '#/definitions/employeeData'
+      summary: Delete Employe by Id.
+    get:
+      consumes:
+      - application/json
+      operationId: getEmployeeById
+      produces:
+      - application/json
+      - Information of the Employee created.
+      responses:
+        "200":
+          description: employeeData
+          schema:
+            $ref: '#/definitions/employeeData'
+      summary: Get Employe by Id.
+    put:
+      consumes:
+      - application/json
+      operationId: updateEmployeeById
+      produces:
+      - application/json
+      - Information of the Employee created.
+      responses:
+        "200":
+          description: employeeData
+          schema:
+            $ref: '#/definitions/employeeData'
+      summary: Update Employe by Id.
+  /healthcheck/:
+    get:
+      operationId: healthcheck
+      produces:
+      - text/plain
+      summary: Check health of the service.
+produces:
+- application/json
+schemes:
+- http
+- https
+swagger: "2.0"
