@@ -14,13 +14,15 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := NewEmployeeController(employeeService)
 
 	req, err := http.NewRequest("GET", "/api/employee/", nil)
 	assert.NoError(t, err)
@@ -55,7 +57,8 @@ func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := NewEmployeeController(employeeService)
 
 	var employee models.Employee
 	employee.FirstName = "Marcos"
@@ -92,7 +95,8 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := NewEmployeeController(employeeService)
 
 	req, err := http.NewRequest("GET", "/api/employee/1", nil)
 	assert.NoError(t, err)
@@ -123,7 +127,8 @@ func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 func TestEmployeeController_UpdateEmployee(t *testing.T) {
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := NewEmployeeController(employeeService)
 
 	var employee models.Employee
 	employee.Id = "1"
@@ -164,7 +169,8 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 func TestEmployeeController_DeleteEmployee(t *testing.T) {
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := NewEmployeeController(employeeService)
 
 	req, err := http.NewRequest("DELETE", "/api/employee/1", nil)
 	assert.NoError(t, err)

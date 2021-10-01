@@ -5,6 +5,7 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/config"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/gorilla/mux"
 )
 
@@ -19,7 +20,8 @@ func main() {
 	}
 
 	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection)
-	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeRepository)
+	App.EmployeeService = services.NewEmployeeService(App.EmployeeRepository)
+	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeService)
 
 	App.RegisterRoutes()
 

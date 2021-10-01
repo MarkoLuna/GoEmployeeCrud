@@ -10,6 +10,7 @@ import (
 	_ "github.com/MarkoLuna/GoEmployeeCrud/pkg/docs"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/routes"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
 	"github.com/gorilla/mux"
 )
@@ -17,6 +18,7 @@ import (
 type Application struct {
 	Router             *mux.Router
 	DbConnection       *sql.DB
+	EmployeeService    services.EmployeeService
 	EmployeeRepository repositories.EmployeeRepository
 	EmployeeController controllers.EmployeeController
 }

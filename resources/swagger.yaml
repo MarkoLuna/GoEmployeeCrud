@@ -7,7 +7,7 @@ definitions:
     type: string
     x-go-package: github.com/MarkoLuna/GoEmployeeCrud/pkg/constants
   employeeData:
-    description: This model represents the Employee data structure for this application.
+    description: This model represents the employee information.
     properties:
       Id:
         description: The id for this employee
@@ -135,7 +135,6 @@ paths:
         x-go-name: Status
       produces:
       - application/json
-      - Information of the Employee created.
       responses:
         "201":
           description: employeeData
@@ -155,7 +154,7 @@ paths:
           description: employeeData
           schema:
             $ref: '#/definitions/employeeData'
-      summary: Delete Employe by Id.
+      summary: Delete Employee by Id.
     get:
       consumes:
       - application/json

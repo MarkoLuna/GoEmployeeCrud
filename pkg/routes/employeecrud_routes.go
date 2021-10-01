@@ -18,9 +18,6 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// Produces:
 	//     - application/json
-	//
-	// Information of the Employee created.
-	// swagger:response employeeData
 	router.HandleFunc("/api/employee/", employeeController.CreateEmployee).Methods("POST")
 
 	// swagger:route GET /api/employee/ getEmployees
@@ -34,9 +31,6 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// Produces:
 	//     - application/json
-	//
-	// Information of the Employee created.
-	// swagger:response employeeData
 	router.HandleFunc("/api/employee/", employeeController.GetEmployees).Methods("GET")
 
 	// swagger:route GET /api/employee/{employeeId} getEmployeeById
@@ -66,14 +60,11 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// Produces:
 	//     - application/json
-	//
-	// Information of the Employee created.
-	// swagger:response employeeData
 	router.HandleFunc("/api/employee/{employeeId}", employeeController.UpdateEmployee).Methods("PUT")
 
 	// swagger:route DELETE /api/employee/{employeeId} deleteEmployeeById
 	//
-	// Delete Employe by Id.
+	// Delete Employee by Id.
 	//
 	// responses:
 	//   200: employeeData
@@ -82,9 +73,6 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// Produces:
 	//     - application/json
-	//
-	// Information of the Employee created.
-	// swagger:response employeeData
 	router.HandleFunc("/api/employee/{employeeId}", employeeController.DeleteEmployee).Methods("DELETE")
 }
 

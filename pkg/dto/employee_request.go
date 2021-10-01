@@ -1,4 +1,4 @@
-package models
+package dto
 
 import (
 	"encoding/json"
@@ -8,49 +8,50 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
 )
 
-// Employee
+// Employee Request
 //
-// This model represents the employee information.
+// This model represents the Employee data structure for this application.
 //
-// swagger:model employeeData
-type Employee struct {
-	// The id for this employee
-	//
-	// required: false
-	// example: 6204037c-30e6-408b-8aaa-dd8219860b4b
-	Id string
-
+// swagger:parameters createEmployee updateEmployeeById
+type EmployeeRequest struct {
 	// The firstname for employee
 	// required: true
-	// min length: 1
+	// example: Marcos
+	// in: body
 	FirstName string `json:"firstName" validate:"required"`
 
 	// The lastname for employee
 	// required: true
-	// min length: 1
+	// example: Luna
+	// in: body
 	LastName string `json:"lastName" validate:"required"`
 
 	// The second last name for employee
 	// required: true
-	// min length: 1
+	// example: Valdez
+	// in: body
 	SecondLastName string `json:"secondLastName" validate:"required"`
 
 	// The date of birth for employee
 	// required: true
 	// example: 1994-04-25T12:00:00Z
+	// in: body
 	DateOfBirth time.Time `json:"dateOfBirth" validate:"required"`
 
 	// The date of employment for employee
 	// required: true
 	// example: 1994-04-25T12:00:00Z
+	// in: body
 	DateOfEmployment time.Time `json:"dateOfEmployment" validate:"required"`
 
 	// The status for employee
 	// required: true
+	// example: Active, Inactive
+	// in: body
 	Status constants.EmployeeStatus `json:"status" validate:"EmployeeStatusValid"`
 }
 
-func (e Employee) ToString() string {
+func (e EmployeeRequest) ToString() string {
 	out, err := json.Marshal(e)
 	if err != nil {
 		log.Fatal(err)

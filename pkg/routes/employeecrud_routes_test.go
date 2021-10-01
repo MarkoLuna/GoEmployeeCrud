@@ -11,8 +11,9 @@ import (
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
-	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,12 +22,12 @@ func TestRegisterEmployeeStoreRoutes(t *testing.T) {
 	router := mux.NewRouter()
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
-	employeeController := controllers.NewEmployeeController(employeeRepository)
+	employeeService := services.NewEmployeeService(employeeRepository)
+	employeeController := controllers.NewEmployeeController(employeeService)
 
 	RegisterEmployeeStoreRoutes(router, &employeeController)
 
-	var employee models.Employee
-	employee.Id = "1"
+	var employee dto.EmployeeRequest
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"

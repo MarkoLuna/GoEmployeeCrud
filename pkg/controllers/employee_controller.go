@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
-	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -16,16 +16,16 @@ import (
 var NewEmployee models.Employee
 
 type EmployeeController struct {
-	employeeRepository repositories.EmployeeRepository
+	employeeService services.EmployeeService
 }
 
-func NewEmployeeController(employeeRepository repositories.EmployeeRepository) EmployeeController {
-	return EmployeeController{employeeRepository}
+func NewEmployeeController(employeeService services.EmployeeService) EmployeeController {
+	return EmployeeController{employeeService}
 }
 
 func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	employee := &models.Employee{}
-	utils.ParseBody(r.Body, employee)
+	employee := dto.EmployeeRequest{}
+	utils.ParseBody(r.Body, &employee)
 
 	v := utils.CreateValidator()
 	err := v.Struct(employee)
@@ -38,23 +38,21 @@ func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	employee.Id = uuid.New().String()
-	log.Println("employee: " + employee.ToString())
-	b, err := eCtrl.employeeRepository.Create(*employee)
+	e, err := eCtrl.employeeService.CreateEmployee(employee)
 	if err != nil {
 		log.Fatalln(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	res, _ := json.Marshal(b)
+	res, _ := json.Marshal(e)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(res)
 }
 
 func (eCtrl EmployeeController) GetEmployees(w http.ResponseWriter, r *http.Request) {
-	newEmployees, err := eCtrl.employeeRepository.FindAll()
+	newEmployees, err := eCtrl.employeeService.GetEmployees()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -69,7 +67,7 @@ func (eCtrl EmployeeController) GetEmployees(w http.ResponseWriter, r *http.Requ
 func (eCtrl EmployeeController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	EmployeeId := vars["employeeId"]
-	EmployeeDetails, err := eCtrl.employeeRepository.FindById(EmployeeId)
+	EmployeeDetails, err := eCtrl.employeeService.GetEmployeeById(EmployeeId)
 	if err == nil {
 		res, _ := json.Marshal(EmployeeDetails)
 		w.Header().Set("Content-Type", "application/json")
@@ -81,8 +79,8 @@ func (eCtrl EmployeeController) GetEmployeeById(w http.ResponseWriter, r *http.R
 }
 
 func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
-	var updateEmployee = &models.Employee{}
-	utils.ParseBody(r.Body, updateEmployee)
+	var updateEmployee = dto.EmployeeRequest{}
+	utils.ParseBody(r.Body, &updateEmployee)
 
 	log.Println("employee: " + updateEmployee.ToString())
 
@@ -98,27 +96,13 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 	}
 
 	vars := mux.Vars(r)
-	EmployeeId := vars["employeeId"]
-	employeeDetails, err := eCtrl.employeeRepository.FindById(EmployeeId)
+	employeeId := vars["employeeId"]
+	employeeDetails, err := eCtrl.employeeService.UpdateEmployee(employeeId, updateEmployee)
 	if err == nil {
-		employeeDetails.FirstName = updateEmployee.FirstName
-		employeeDetails.LastName = updateEmployee.LastName
-		employeeDetails.SecondLastName = updateEmployee.SecondLastName
-		employeeDetails.DateOfBirth = updateEmployee.DateOfBirth
-		employeeDetails.DateOfEmployment = updateEmployee.DateOfEmployment
-		employeeDetails.Status = updateEmployee.Status
-
-		log.Println("employee: " + employeeDetails.ToString())
-
-		count, _ := eCtrl.employeeRepository.Update(employeeDetails)
-		if count > 0 {
-			res, _ := json.Marshal(employeeDetails)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			w.Write(res)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
+		res, _ := json.Marshal(employeeDetails)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(res)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
@@ -126,10 +110,10 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 
 func (eCtrl EmployeeController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	EmployeeId := vars["employeeId"]
+	employeeId := vars["employeeId"]
 
-	count, _ := eCtrl.employeeRepository.DeleteById(EmployeeId)
-	if count > 0 {
+	err := eCtrl.employeeService.DeleteEmployeeById(employeeId)
+	if err == nil {
 		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
