@@ -90,6 +90,7 @@ func TestMain(m *testing.M) {
 	sqlMock = mock
 	dbConnection = db
 	InitServer(dbConnection)
+	os.Setenv("SERVER_SSL_ENABLED", "false")
 	go App.Run()
 
 	code := m.Run()
@@ -250,7 +251,7 @@ func TestEmployeeRepositoryImpl_Create(t *testing.T) {
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("POST", url, bytes.NewBuffer(jsonStr))
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode, "handler returned wrong status code")
+	assert.Equal(t, http.StatusCreated, resp.StatusCode, "handler returned wrong status code")
 
 	employeeResponse := models.Employee{}
 	body, _ := ioutil.ReadAll(resp.Body)

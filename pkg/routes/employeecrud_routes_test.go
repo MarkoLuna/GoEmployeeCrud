@@ -43,7 +43,7 @@ func TestRegisterEmployeeStoreRoutes(t *testing.T) {
 		status int
 	}{
 		{"GET", "/api/employee/", nil, http.StatusOK},
-		{"POST", "/api/employee/", bytes.NewBuffer(jsonStr), http.StatusOK},
+		{"POST", "/api/employee/", bytes.NewBuffer(jsonStr), http.StatusCreated},
 		{"GET", "/api/employee/1", nil, http.StatusOK},
 		{"PUT", "/api/employee/1", bytes.NewBuffer(jsonStr), http.StatusOK},
 		{"DELETE", "/api/employee/1", nil, http.StatusOK},

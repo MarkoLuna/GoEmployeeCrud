@@ -12,7 +12,7 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	// Create a new Employee.
 	//
 	// responses:
-	//   200: employeeData
+	//   201: employeeData
 	// Consumes:
 	//     - application/json
 	//

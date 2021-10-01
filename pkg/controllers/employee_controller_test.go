@@ -76,7 +76,7 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 
 	handler.ServeHTTP(rr, req)
 
-	assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+	assert.Equal(t, http.StatusCreated, rr.Code, "handler returned wrong status code")
 	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
 	employeeResponse := models.Employee{}
