@@ -82,11 +82,62 @@ paths:
       consumes:
       - application/json
       operationId: createEmployee
+      parameters:
+      - description: The firstname for employee
+        example: Marcos
+        in: body
+        name: firstName
+        required: true
+        schema:
+          type: string
+        x-go-name: FirstName
+      - description: The lastname for employee
+        example: Luna
+        in: body
+        name: lastName
+        required: true
+        schema:
+          type: string
+        x-go-name: LastName
+      - description: The second last name for employee
+        example: Valdez
+        in: body
+        name: secondLastName
+        required: true
+        schema:
+          type: string
+        x-go-name: SecondLastName
+      - description: The date of birth for employee
+        example: "1994-04-25T12:00:00Z"
+        in: body
+        name: dateOfBirth
+        required: true
+        schema:
+          format: date-time
+          type: string
+        x-go-name: DateOfBirth
+      - description: The date of employment for employee
+        example: "1994-04-25T12:00:00Z"
+        in: body
+        name: dateOfEmployment
+        required: true
+        schema:
+          format: date-time
+          type: string
+        x-go-name: DateOfEmployment
+      - description: The status for employee
+        example: Active, Inactive
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/EmployeeStatus'
+        x-go-name: Status
       produces:
       - application/json
       - Information of the Employee created.
       responses:
-        "200":
+        "201":
           description: employeeData
           schema:
             $ref: '#/definitions/employeeData'
@@ -122,6 +173,57 @@ paths:
       consumes:
       - application/json
       operationId: updateEmployeeById
+      parameters:
+      - description: The firstname for employee
+        example: Marcos
+        in: body
+        name: firstName
+        required: true
+        schema:
+          type: string
+        x-go-name: FirstName
+      - description: The lastname for employee
+        example: Luna
+        in: body
+        name: lastName
+        required: true
+        schema:
+          type: string
+        x-go-name: LastName
+      - description: The second last name for employee
+        example: Valdez
+        in: body
+        name: secondLastName
+        required: true
+        schema:
+          type: string
+        x-go-name: SecondLastName
+      - description: The date of birth for employee
+        example: "1994-04-25T12:00:00Z"
+        in: body
+        name: dateOfBirth
+        required: true
+        schema:
+          format: date-time
+          type: string
+        x-go-name: DateOfBirth
+      - description: The date of employment for employee
+        example: "1994-04-25T12:00:00Z"
+        in: body
+        name: dateOfEmployment
+        required: true
+        schema:
+          format: date-time
+          type: string
+        x-go-name: DateOfEmployment
+      - description: The status for employee
+        example: Active, Inactive
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/EmployeeStatus'
+        x-go-name: Status
       produces:
       - application/json
       - Information of the Employee created.
@@ -142,4 +244,11 @@ produces:
 schemes:
 - http
 - https
+security:
+- api_key: []
+securityDefinitions:
+  api_key:
+    in: header
+    name: KEY
+    type: apiKey
 swagger: "2.0"

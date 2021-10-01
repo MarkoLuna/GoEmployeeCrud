@@ -32,13 +32,13 @@ docker-build:
 	rm -f ${NAME}
 
 check-swagger:
-	which swagger || (go get -d github.com/go-swagger/go-swagger/cmd/swagger)
+	which swagger || (GO111MODULE=off go get -d github.com/go-swagger/go-swagger/cmd/swagger)
 
 swagger: check-swagger
-	swagger generate spec -o ./swagger.yaml --scan-models
+	swagger generate spec -o ./resources/swagger.yaml --scan-models
 
 serve-swagger: swagger
-	swagger serve -p 8081 -F=swagger swagger.yaml
+	swagger serve -p 8081 -F=swagger resources/swagger.yaml
 
 docker-run: docker-build
 	docker run -it -p 8080:8080 --rm goemployee_crud
