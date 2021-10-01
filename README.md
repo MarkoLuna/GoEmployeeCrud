@@ -2,6 +2,11 @@
 
 Employee Crud Rest API using Golang
 
+## Install deps
+```bash
+$ go mod download
+```
+
 ## Run on local
 
 ```
