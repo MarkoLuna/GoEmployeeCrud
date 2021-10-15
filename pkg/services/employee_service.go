@@ -18,7 +18,7 @@ func NewEmployeeService(employeeRepository repositories.EmployeeRepository) Empl
 	return EmployeeService{employeeRepository}
 }
 
-func (eSrv EmployeeService) CreateEmployee(employeeRequest dto.EmployeeRequest) (models.Employee, error) {
+func (eSrv EmployeeService) CreateEmployee(employeeRequest dto.EmployeeRequest) (*models.Employee, error) {
 
 	var employee models.Employee
 	employee.Id = uuid.New().String()
@@ -32,7 +32,7 @@ func (eSrv EmployeeService) CreateEmployee(employeeRequest dto.EmployeeRequest) 
 	log.Println("employee: " + employee.ToString())
 	e, err := eSrv.employeeRepository.Create(employee)
 
-	return *e, err
+	return e, err
 }
 
 func (eSrv EmployeeService) GetEmployees() ([]models.Employee, error) {
