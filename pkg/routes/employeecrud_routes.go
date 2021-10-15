@@ -12,7 +12,7 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	// Create a new Employee.
 	//
 	// responses:
-	//   201: employeeData
+	//   201: employeeData Employee created successfully
 	// Consumes:
 	//     - application/json
 	//
@@ -25,7 +25,7 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	// Get Employee list.
 	//
 	// responses:
-	//   200: employeeData
+	//   200: employeeData Employee information
 	// Consumes:
 	//     - application/json
 	//
@@ -33,28 +33,25 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//     - application/json
 	router.HandleFunc("/api/employee/", employeeController.GetEmployees).Methods("GET")
 
-	// swagger:route GET /api/employee/{employeeId} getEmployeeById
+	// swagger:route GET /api/employee/{EmployeeId} getEmployeeById
 	//
 	// Get Employe by Id.
 	//
 	// responses:
-	//   200: employeeData
+	//   200: employeeData Employee information
 	// Consumes:
 	//     - application/json
 	//
 	// Produces:
 	//     - application/json
-	//
-	// Information of the Employee created.
-	// swagger:response employeeData
 	router.HandleFunc("/api/employee/{employeeId}", employeeController.GetEmployeeById).Methods("GET")
 
-	// swagger:route PUT /api/employee/{employeeId} updateEmployeeById
+	// swagger:route PUT /api/employee/{EmployeeId} updateEmployeeById
 	//
 	// Update Employe by Id.
 	//
 	// responses:
-	//   200: employeeData
+	//   200: employeeData Employee updated successfully
 	// Consumes:
 	//     - application/json
 	//
@@ -62,12 +59,12 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//     - application/json
 	router.HandleFunc("/api/employee/{employeeId}", employeeController.UpdateEmployee).Methods("PUT")
 
-	// swagger:route DELETE /api/employee/{employeeId} deleteEmployeeById
+	// swagger:route DELETE /api/employee/{EmployeeId} deleteEmployeeById
 	//
 	// Delete Employee by Id.
 	//
 	// responses:
-	//   200: employeeData
+	//   200: empty Employee deleted successfully
 	// Consumes:
 	//     - application/json
 	//
@@ -84,5 +81,7 @@ func RegisterHealthcheckRoute(router *mux.Router) {
 	//
 	// Produces:
 	//     - text/plain
+	// responses:
+	//   200: empty Service is up
 	router.HandleFunc("/healthcheck/", controllers.HealthCheckHandler).Methods("GET")
 }

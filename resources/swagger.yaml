@@ -71,10 +71,9 @@ paths:
       operationId: getEmployees
       produces:
       - application/json
-      - Information of the Employee created.
       responses:
         "200":
-          description: employeeData
+          description: Employee information
           schema:
             $ref: '#/definitions/employeeData'
       summary: Get Employee list.
@@ -137,34 +136,45 @@ paths:
       - application/json
       responses:
         "201":
-          description: employeeData
+          description: Employee created successfully
           schema:
             $ref: '#/definitions/employeeData'
       summary: Create a new Employee.
-  /api/employee/{employeeId}:
+  /api/employee/{EmployeeId}:
     delete:
       consumes:
       - application/json
       operationId: deleteEmployeeById
+      parameters:
+      - description: The id for the employee
+        example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+        in: path
+        name: EmployeeId
+        required: true
+        type: string
       produces:
       - application/json
-      - Information of the Employee created.
       responses:
         "200":
-          description: employeeData
-          schema:
-            $ref: '#/definitions/employeeData'
+          $ref: '#/responses/empty'
+          description: Employee deleted successfully
       summary: Delete Employee by Id.
     get:
       consumes:
       - application/json
       operationId: getEmployeeById
+      parameters:
+      - description: The id for the employee
+        example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+        in: path
+        name: EmployeeId
+        required: true
+        type: string
       produces:
       - application/json
-      - Information of the Employee created.
       responses:
         "200":
-          description: employeeData
+          description: Employee information
           schema:
             $ref: '#/definitions/employeeData'
       summary: Get Employe by Id.
@@ -223,12 +233,17 @@ paths:
         schema:
           $ref: '#/definitions/EmployeeStatus'
         x-go-name: Status
+      - description: The id for the employee
+        example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+        in: path
+        name: EmployeeId
+        required: true
+        type: string
       produces:
       - application/json
-      - Information of the Employee created.
       responses:
         "200":
-          description: employeeData
+          description: Employee updated successfully
           schema:
             $ref: '#/definitions/employeeData'
       summary: Update Employe by Id.
@@ -237,6 +252,10 @@ paths:
       operationId: healthcheck
       produces:
       - text/plain
+      responses:
+        "200":
+          $ref: '#/responses/empty'
+          description: Service is up
       summary: Check health of the service.
 produces:
 - application/json
