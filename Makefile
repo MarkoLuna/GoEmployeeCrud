@@ -31,13 +31,13 @@ docker-build:
 	docker build -t goemployee_crud:latest .
 	rm -f ${NAME}
 
-check-swagger:
+swagger-check:
 	which swagger || (GO111MODULE=off go get -d github.com/go-swagger/go-swagger/cmd/swagger)
 
-swagger: check-swagger
+swagger: swagger-check
 	swagger generate spec -o ./resources/swagger.yaml --scan-models
 
-serve-swagger: swagger
+swagger-serve: swagger
 	swagger serve -p 8081 -F=swagger resources/swagger.yaml
 
 docker-run: docker-build
