@@ -39,6 +39,8 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// responses:
 	//   200: employeeData Employee information
+	// responses:
+	//   404: empty Employee not found
 	// Consumes:
 	//     - application/json
 	//
@@ -65,6 +67,8 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 	//
 	// responses:
 	//   200: empty Employee deleted successfully
+	// responses:
+	//   404: empty Employee not found
 	// Consumes:
 	//     - application/json
 	//

@@ -158,6 +158,9 @@ paths:
         "200":
           $ref: '#/responses/empty'
           description: Employee deleted successfully
+        "404":
+          $ref: '#/responses/empty'
+          description: Employee not found
       summary: Delete Employee by Id.
     get:
       consumes:
@@ -177,6 +180,9 @@ paths:
           description: Employee information
           schema:
             $ref: '#/definitions/employeeData'
+        "404":
+          $ref: '#/responses/empty'
+          description: Employee not found
       summary: Get Employe by Id.
     put:
       consumes:
