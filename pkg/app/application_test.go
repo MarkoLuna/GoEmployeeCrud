@@ -16,7 +16,9 @@ import (
 	"time"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/gorilla/mux"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -38,13 +40,14 @@ func InitServer(db_connection *sql.DB) {
 	App.Router = mux.NewRouter()
 	App.DbConnection = db_connection
 	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection)
-	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeRepository)
+	App.EmployeeService = services.NewEmployeeService(App.EmployeeRepository)
+	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeService)
 
 	App.RegisterRoutes()
 }
 
-var e = &models.Employee{
-	Id:               "1",
+var employeeId = "1"
+var e = &dto.EmployeeRequest{
 	FirstName:        "Marcos",
 	LastName:         "Luna",
 	SecondLastName:   "Valdez",
@@ -90,6 +93,7 @@ func TestMain(m *testing.M) {
 	sqlMock = mock
 	dbConnection = db
 	InitServer(dbConnection)
+	os.Setenv("SERVER_SSL_ENABLED", "false")
 	go App.Run()
 
 	code := m.Run()
@@ -118,11 +122,11 @@ func TestFindById(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id_employee", "first_name", "last_name", "second_last_name",
 		"date_of_birth", "date_of_employment", "status"}).
-		AddRow(e.Id, e.FirstName, e.LastName, e.SecondLastName, e.DateOfBirth, e.DateOfEmployment, e.Status)
+		AddRow(employeeId, e.FirstName, e.LastName, e.SecondLastName, e.DateOfBirth, e.DateOfEmployment, e.Status)
 
-	sqlMock.ExpectQuery(query).WithArgs(e.Id).WillReturnRows(rows)
+	sqlMock.ExpectQuery(query).WithArgs(employeeId).WillReturnRows(rows)
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	resp := makeRequest("GET", url, nil)
 	defer resp.Body.Close()
 
@@ -154,9 +158,9 @@ func TestEmployeeRepositoryImpl_FindByIdError(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id_employee", "first_name", "last_name", "second_last_name",
 		"date_of_birth", "date_of_employment", "status"})
 
-	sqlMock.ExpectQuery(query).WithArgs(e.Id).WillReturnRows(rows)
+	sqlMock.ExpectQuery(query).WithArgs(employeeId).WillReturnRows(rows)
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	resp := makeRequest("GET", url, nil)
 	defer resp.Body.Close()
 
@@ -176,7 +180,7 @@ func TestFindAll(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id_employee", "first_name", "last_name", "second_last_name",
 		"date_of_birth", "date_of_employment", "status"}).
-		AddRow(e.Id, e.FirstName, e.LastName, e.SecondLastName, e.DateOfBirth, e.DateOfEmployment, e.Status)
+		AddRow(employeeId, e.FirstName, e.LastName, e.SecondLastName, e.DateOfBirth, e.DateOfEmployment, e.Status)
 
 	sqlMock.ExpectQuery(query).WillReturnRows(rows)
 
@@ -250,7 +254,7 @@ func TestEmployeeRepositoryImpl_Create(t *testing.T) {
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("POST", url, bytes.NewBuffer(jsonStr))
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode, "handler returned wrong status code")
+	assert.Equal(t, http.StatusCreated, resp.StatusCode, "handler returned wrong status code")
 
 	employeeResponse := models.Employee{}
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -288,9 +292,10 @@ func TestEmployeeRepositoryImpl_Update(t *testing.T) {
 
 	rows_select := sqlmock.NewRows([]string{"id_employee", "first_name", "last_name", "second_last_name",
 		"date_of_birth", "date_of_employment", "status"}).
-		AddRow(e.Id, e.FirstName, e.LastName, e.SecondLastName, e.DateOfBirth, e.DateOfEmployment, e.Status)
+		AddRow(employeeId, e.FirstName, e.LastName, e.SecondLastName,
+			e.DateOfBirth, e.DateOfEmployment, e.Status)
 
-	sqlMock.ExpectQuery(query_select).WithArgs(e.Id).WillReturnRows(rows_select)
+	sqlMock.ExpectQuery(query_select).WithArgs(employeeId).WillReturnRows(rows_select)
 
 	query_update := `
 		UPDATE employees SET
@@ -302,10 +307,10 @@ func TestEmployeeRepositoryImpl_Update(t *testing.T) {
 			status = \$7
 		WHERE id_employee = \$1;
 	`
-	sqlMock.ExpectExec(query_update).WithArgs(e.Id, e.FirstName, e.LastName, e.SecondLastName,
+	sqlMock.ExpectExec(query_update).WithArgs(employeeId, e.FirstName, e.LastName, e.SecondLastName,
 		e.DateOfBirth, e.DateOfEmployment, e.Status).WillReturnResult(sqlmock.NewResult(0, 1))
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("PUT", url, bytes.NewBuffer(jsonStr))
 
@@ -318,7 +323,7 @@ func TestEmployeeRepositoryImpl_Update(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, employeeResponse)
 
-	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
+	assert.Equal(t, employeeId, employeeResponse.Id, "id employee returned is wrong")
 }
 
 func TestEmployeeRepositoryImpl_UpdateErr(t *testing.T) {
@@ -339,9 +344,9 @@ func TestEmployeeRepositoryImpl_UpdateErr(t *testing.T) {
 	rows_select := sqlmock.NewRows([]string{"id_employee", "first_name", "last_name", "second_last_name",
 		"date_of_birth", "date_of_employment", "status"})
 
-	sqlMock.ExpectQuery(query_select).WithArgs(e.Id).WillReturnRows(rows_select)
+	sqlMock.ExpectQuery(query_select).WithArgs(employeeId).WillReturnRows(rows_select)
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	jsonStr, _ := json.Marshal(e)
 	resp := makeRequest("PUT", url, bytes.NewBuffer(jsonStr))
 
@@ -351,9 +356,9 @@ func TestEmployeeRepositoryImpl_UpdateErr(t *testing.T) {
 func TestEmployeeRepositoryImpl_DeleteById(t *testing.T) {
 
 	query := `DELETE FROM employees WHERE id_employee = \$1\;`
-	sqlMock.ExpectExec(query).WithArgs(e.Id).WillReturnResult(sqlmock.NewResult(0, 1))
+	sqlMock.ExpectExec(query).WithArgs(employeeId).WillReturnResult(sqlmock.NewResult(0, 1))
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	resp := makeRequest("DELETE", url, nil)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode, "handler returned wrong status code")
@@ -362,9 +367,9 @@ func TestEmployeeRepositoryImpl_DeleteById(t *testing.T) {
 func TestEmployeeRepositoryStub_DeleteByIdError(t *testing.T) {
 
 	query := `DELETE FROM employees WHERE id_employee = \$1\;`
-	sqlMock.ExpectExec(query).WithArgs(e.Id).WillReturnResult(sqlmock.NewResult(0, 0))
+	sqlMock.ExpectExec(query).WithArgs(employeeId).WillReturnResult(sqlmock.NewResult(0, 0))
 
-	url := fmt.Sprintf("%s/api/employee/%s", basePath, e.Id)
+	url := fmt.Sprintf("%s/api/employee/%s", basePath, employeeId)
 	resp := makeRequest("DELETE", url, nil)
 
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode, "handler returned wrong status code")

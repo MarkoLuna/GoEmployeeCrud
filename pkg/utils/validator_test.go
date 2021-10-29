@@ -5,12 +5,13 @@ import (
 	"time"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
 )
 
 func TestValidEmployee(t *testing.T) {
 
-	var employee models.Employee
+	var employee dto.EmployeeRequest
 	employee.FirstName = "Marcos"
 	employee.LastName = "Luna"
 	employee.SecondLastName = "Valdez"
@@ -25,7 +26,7 @@ func TestValidEmployee(t *testing.T) {
 	}
 }
 
-func TestParseEmployeeWithInvalidData(t *testing.T) {
+func TestParseEmployeeRequestWithInvalidData(t *testing.T) {
 
 	employee := &models.Employee{}
 
