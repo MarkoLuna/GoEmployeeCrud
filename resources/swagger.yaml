@@ -268,11 +268,4 @@ produces:
 schemes:
 - http
 - https
-security:
-- api_key: []
-securityDefinitions:
-  api_key:
-    in: header
-    name: KEY
-    type: apiKey
 swagger: "2.0"
