@@ -62,7 +62,8 @@ func (app *Application) StartServer() {
 	address := app.Address()
 	log.Println("Starting server on:", address)
 
-	log.Fatal(http.ListenAndServe(address, app.Router))
+	// log.Fatal(http.ListenAndServe(address, app.Router))
+	log.Fatal(http.ListenAndServe(address, new(utils.GzipHandler)))
 }
 
 func (app *Application) StartSecureServer() {
