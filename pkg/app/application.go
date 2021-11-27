@@ -18,14 +18,20 @@ type Application struct {
 	Router             *mux.Router
 	DbConnection       *sql.DB
 	EmployeeService    services.EmployeeService
+	ClientService      services.ClientService
+	UserService        services.UserService
+	OAuthService       services.OAuthService
 	EmployeeRepository repositories.EmployeeRepository
 	EmployeeController controllers.EmployeeController
+	OAuthController    controllers.OAuthController
 }
 
 func (app *Application) RegisterRoutes() {
 	routes.RegisterHealthcheckRoute(app.Router)
 	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
+	routes.RegisterOAuthRoutes(app.Router, &app.OAuthController)
 	enableCORS(app.Router)
+	enableOAuth(app.Router, app.OAuthService)
 }
 
 func (app *Application) Address() string {
@@ -38,6 +44,36 @@ func (app *Application) Address() string {
 func (app *Application) HandleRoutes() {
 	http.Handle("/", app.Router)
 }
+
+func enableOAuth(router *mux.Router, oauthService services.OAuthService) {
+	router.PathPrefix("/api/employee/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		ok, err := oauthService.ValidateToken(req)
+		if !ok || err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		// f.ServeHTTP(w, r)
+		// w.Header().Set("Access-Control-Allow-Origin", "*")
+	}).Methods(http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete)
+
+	// router.Use(middlewareCors)
+}
+
+/*
+func validateToken(f http.HandlerFunc, app *Application, srv *server.Server) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		ok, err := app.OAuthService.ValidateToken(r)
+		if !ok || err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		f.ServeHTTP(w, r)
+	})
+}
+*/
 
 func enableCORS(router *mux.Router) {
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
