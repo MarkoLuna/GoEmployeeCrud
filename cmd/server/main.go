@@ -41,43 +41,6 @@ func main() {
 	oauthServer.SetClientInfoHandler(server.ClientFormHandler)
 	manager.SetRefreshTokenCfg(manage.DefaultRefreshTokenCfg)
 
-	/*
-		manager := manage.NewDefaultManager()
-		// token memory store
-		manager.MustTokenStorage(store.NewMemoryTokenStore())
-
-		// client memory store
-		clientStore := store.NewClientStore()
-		/*
-			clientStore.Set("employee_client", &models.Client{
-				ID:     "employee_client",
-				Secret: "employee_secret",
-				Domain: "http://localhost:8080",
-			})
-	*/
-	/*
-		clientStore.Set("000000", &models.Client{
-			ID:     "000000",
-			Secret: "999999",
-			Domain: "http://localhost:8080",
-		})
-		manager.MapClientStorage(clientStore)
-	*/
-
-	/*
-		oauthServer.SetAllowGetAccessRequest(true)
-		oauthServer.SetClientInfoHandler(server.ClientFormHandler)
-
-		oauthServer.SetInternalErrorHandler(func(err error) (re *errors.Response) {
-			log.Println("Internal Error:", err.Error())
-			return
-		})
-
-		oauthServer.SetResponseErrorHandler(func(re *errors.Response) {
-			log.Println("Response Error:", re.Error.Error())
-		})
-	*/
-
 	App.OAuthController = controllers.NewOAuthController(oauthServer, App.OAuthService, App.ClientService, App.UserService)
 
 	App.RegisterRoutes()

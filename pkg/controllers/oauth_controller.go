@@ -44,16 +44,6 @@ func (ctrl OAuthController) Configure() {
 	})
 }
 
-/*
-func (ctrl OAuthController) AuthorizeHandler(w http.ResponseWriter, r *http.Request) {
-	err := ctrl.oauthServer.HandleAuthorizeRequest(w, r)
-	if err != nil {
-		log.Printf("an error '%s' was not expected when authorize ... ", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-}
-*/
-
 func (ctrl OAuthController) TokenHandler(w http.ResponseWriter, r *http.Request) {
 	auth, ok := ctrl.GetBasicAuth(r)
 	if !ok {
