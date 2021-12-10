@@ -20,5 +20,5 @@ func RegisterHealthcheckRoute(router *mux.Router) {
 
 func RegisterOAuthRoutes(router *mux.Router, oauthController *controllers.OAuthController) {
 	router.HandleFunc("/oauth/token", oauthController.TokenHandler).Methods("POST")
-	router.HandleFunc("/oauth/userinfo", oauthController.GetUserInfo).Methods("POST")
+	router.HandleFunc("/oauth/userinfo", oauthController.GetUserInfo).Methods("GET")
 }
