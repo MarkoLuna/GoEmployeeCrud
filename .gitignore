@@ -1,5 +1,9 @@
 # folders
 .idea/
 
+# Compiled go code
+app
+*.exe
+
 # files
 NOTES.md
