@@ -32,7 +32,7 @@ func (app *Application) RegisterRoutes() {
 	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
 	routes.RegisterOAuthRoutes(app.Router, &app.OAuthController)
 	config.EnableCORS(app.Router)
-	config.NewAuthConfig(app.Router, true, nil, app.OAuthService)
+	config.NewAuthConfig(app.Router, true, config.DefaultSkippedPaths[:], app.OAuthService)
 }
 
 func (app *Application) Address() string {

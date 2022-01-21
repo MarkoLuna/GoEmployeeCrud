@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	defaultSkippedPaths = [...]string{
+	DefaultSkippedPaths = [...]string{
 		"/healthcheck/",
 		"/oauth/token",
 	}
@@ -23,14 +23,7 @@ type AuthConfig struct {
 
 func NewAuthConfig(router *mux.Router, enableAuth bool, skippedPaths []string, authService services.OAuthService) {
 	if enableAuth {
-		var skippedPathss []string
-		if skippedPaths != nil {
-			skippedPathss = skippedPaths
-		} else {
-			skippedPathss = defaultSkippedPaths[:]
-		}
-
-		authConfig := AuthConfig{EnableAuth: enableAuth, SkippedPaths: skippedPathss, OAuthService: authService}
+		authConfig := AuthConfig{EnableAuth: enableAuth, SkippedPaths: skippedPaths, OAuthService: authService}
 		router.Use(authConfig.AuthMiddleware)
 	}
 }
