@@ -6,6 +6,7 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services/impl"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
@@ -22,13 +23,19 @@ func main() {
 		App.DbConnection = config.GetDB()
 	}
 
-	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection)
+	if App.EmployeeRepository == nil {
+		App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection, true)
+	}
+
 	App.EmployeeService = services.NewEmployeeService(App.EmployeeRepository)
 	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeService)
 
 	App.ClientService = services.NewClientService()
 	App.UserService = services.NewUserService()
-	App.OAuthService = services.NewOAuthService()
+
+	if App.OAuthService == nil {
+		App.OAuthService = impl.NewOAuthService()
+	}
 
 	manager := manage.NewDefaultManager()
 	manager.SetAuthorizeCodeTokenCfg(manage.DefaultAuthorizeCodeTokenCfg)

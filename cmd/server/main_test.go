@@ -15,6 +15,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services/stubs"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -26,6 +28,8 @@ var (
 
 func InitServer(dbConnection *sql.DB) {
 	App.DbConnection = dbConnection
+	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection, false)
+	App.OAuthService = stubs.NewOAuthServiceStub()
 	go main()
 }
 

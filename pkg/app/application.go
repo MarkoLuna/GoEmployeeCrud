@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/app/config"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/routes"
@@ -32,7 +32,7 @@ func (app *Application) RegisterRoutes() {
 	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
 	routes.RegisterOAuthRoutes(app.Router, &app.OAuthController)
 	enableCORS(app.Router)
-	app.enableOAuth(app.Router, app.OAuthService)
+	config.NewAuthConfig(app.Router, true, nil, app.OAuthService)
 }
 
 func (app *Application) Address() string {
@@ -44,26 +44,6 @@ func (app *Application) Address() string {
 
 func (app *Application) HandleRoutes() {
 	http.Handle("/", app.Router)
-}
-
-func (app *Application) enableOAuth(router *mux.Router, oauthService services.OAuthService) {
-	router.Use(app.authMiddleware)
-}
-
-func (app *Application) authMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, req *http.Request) {
-
-			if strings.HasPrefix(req.URL.Path, "/api/employee") {
-				ok, err := app.OAuthService.ValidateToken(req)
-				if !ok || err != nil {
-					http.Error(w, err.Error(), http.StatusUnauthorized)
-					return
-				}
-			}
-
-			next.ServeHTTP(w, req)
-		})
 }
 
 func enableCORS(router *mux.Router) {

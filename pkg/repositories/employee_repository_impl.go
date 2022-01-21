@@ -11,9 +11,13 @@ type EmployeeRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewEmployeeRepository(db *sql.DB) EmployeeRepository {
+func NewEmployeeRepository(db *sql.DB, initDb bool) EmployeeRepository {
 	repo := &EmployeeRepositoryImpl{db}
-	repo.CreateTable()
+
+	if initDb {
+		repo.CreateTable()
+	}
+
 	return repo
 }
 
