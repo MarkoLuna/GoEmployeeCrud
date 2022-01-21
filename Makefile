@@ -1,5 +1,5 @@
 # constants
-NAME=app
+NAME=employeeCrudApp
 PROJECT?=github.com/MarkoLuna/GoEmployeeCrud
 
 build:
@@ -20,7 +20,7 @@ test-total-cover:
 	rm cover.out
 
 run: build
-	./app
+	./${NAME}
 
 clean:
 	go clean "${PROJECT}/..."
