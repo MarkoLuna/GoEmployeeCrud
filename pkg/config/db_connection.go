@@ -12,9 +12,9 @@ import (
 var (
 	host       = utils.GetEnv("DB_HOST", "localhost")
 	port       = utils.GetEnv("DB_PORT", "5432")
-	user       = utils.GetEnv("DB_USER", "postgres_user")
-	password   = utils.GetEnv("DB_PASSWORD", "userspw")
-	dbname     = utils.GetEnv("DB_NAME", "users_db")
+	user       = utils.GetEnv("DB_USER", "vagrant")
+	password   = utils.GetEnv("DB_PASSWORD", "vagrant")
+	dbname     = utils.GetEnv("DB_NAME", "vagrant")
 	driverName = utils.GetEnv("DB_DRIVER_NAME", "postgres")
 )
 

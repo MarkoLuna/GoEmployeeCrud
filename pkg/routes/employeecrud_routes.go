@@ -17,3 +17,8 @@ func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *control
 func RegisterHealthcheckRoute(router *mux.Router) {
 	router.HandleFunc("/healthcheck/", controllers.HealthCheckHandler).Methods("GET")
 }
+
+func RegisterOAuthRoutes(router *mux.Router, oauthController *controllers.OAuthController) {
+	router.HandleFunc("/oauth/token", oauthController.TokenHandler).Methods("POST")
+	router.HandleFunc("/oauth/userinfo", oauthController.GetUserInfo).Methods("GET")
+}
