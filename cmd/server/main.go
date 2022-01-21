@@ -18,6 +18,12 @@ var (
 )
 
 func main() {
+	ConfigureApp()
+	defer App.DbConnection.Close()
+	App.Run()
+}
+
+func ConfigureApp() {
 	App.Router = mux.NewRouter()
 	if App.DbConnection == nil {
 		App.DbConnection = config.GetDB()
@@ -51,8 +57,4 @@ func main() {
 	App.OAuthController = controllers.NewOAuthController(oauthServer, App.OAuthService, App.ClientService, App.UserService)
 
 	App.RegisterRoutes()
-
-	defer App.DbConnection.Close()
-
-	App.Run()
 }
