@@ -56,5 +56,5 @@ func ConfigureApp() {
 
 	App.OAuthController = controllers.NewOAuthController(oauthServer, App.OAuthService, App.ClientService, App.UserService)
 
-	App.RegisterRoutes()
+	App.LoadConfiguration()
 }

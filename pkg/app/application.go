@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/app/config"
@@ -13,6 +14,8 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
 	"github.com/gorilla/mux"
+
+	"github.com/joho/godotenv"
 )
 
 type Application struct {
@@ -27,12 +30,26 @@ type Application struct {
 	OAuthController    controllers.OAuthController
 }
 
-func (app *Application) RegisterRoutes() {
+func (app *Application) LoadConfiguration() {
+	app.loadEnvValues()
 	routes.RegisterHealthcheckRoute(app.Router)
 	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
 	routes.RegisterOAuthRoutes(app.Router, &app.OAuthController)
 	config.EnableCORS(app.Router)
 	config.NewAuthConfig(app.Router, true, config.DefaultSkippedPaths[:], app.OAuthService)
+}
+
+func (app *Application) loadEnvValues() {
+	if _, err := os.Stat(".env"); err == nil {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatalf("Error loading .env file")
+		} else {
+			log.Println("app environment values loaded successfully")
+		}
+	} else {
+		log.Println("Unable to find the env file for load app environment values")
+	}
 }
 
 func (app *Application) Address() string {

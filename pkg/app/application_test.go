@@ -45,7 +45,7 @@ func InitServer(db_connection *sql.DB) {
 	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeService)
 	App.OAuthService = stubs.NewOAuthServiceStub()
 
-	App.RegisterRoutes()
+	App.LoadConfiguration()
 }
 
 var employeeId = "1"

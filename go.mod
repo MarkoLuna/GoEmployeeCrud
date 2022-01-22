@@ -9,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
+	github.com/joho/godotenv v1.4.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/stretchr/testify v1.6.1
