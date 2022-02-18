@@ -2,7 +2,7 @@ FROM golang:alpine
 
 WORKDIR /dist
 
-COPY app main
+COPY employeeCrudApp main
 COPY resources/ssl ssl
 
 EXPOSE 8080

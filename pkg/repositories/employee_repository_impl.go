@@ -11,8 +11,34 @@ type EmployeeRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewEmployeeRepository(db *sql.DB) EmployeeRepository {
-	return &EmployeeRepositoryImpl{db}
+func NewEmployeeRepository(db *sql.DB, initDb bool) EmployeeRepository {
+	repo := &EmployeeRepositoryImpl{db}
+
+	if initDb {
+		repo.CreateTable()
+	}
+
+	return repo
+}
+
+func (er EmployeeRepositoryImpl) CreateTable() {
+
+	sqlStatement := `CREATE TABLE IF NOT EXISTS employees (
+		id_employee TEXT PRIMARY KEY,
+		first_name TEXT,
+		last_name TEXT,
+		second_last_name TEXT,
+		date_of_birth      DATE,
+		date_of_employment DATE,
+		status TEXT
+	  );
+	  `
+
+	_, err := er.db.Exec(sqlStatement)
+	if err != nil {
+		log.Println("Unable to create the table:")
+		log.Println(err)
+	}
 }
 
 func (er EmployeeRepositoryImpl) Create(e models.Employee) (*models.Employee, error) {

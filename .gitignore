@@ -1,5 +1,9 @@
 # folders
 .idea/
 
+# Compiled go code
+employeeCrudApp
+*.exe
+
 # files
 NOTES.md

@@ -1,5 +1,5 @@
 # constants
-NAME=app
+NAME=employeeCrudApp
 PROJECT?=github.com/MarkoLuna/GoEmployeeCrud
 
 build:
@@ -20,7 +20,7 @@ test-total-cover:
 	rm cover.out
 
 run: build
-	./app
+	./${NAME}
 
 clean:
 	go clean "${PROJECT}/..."
@@ -31,7 +31,6 @@ docker-build:
 	docker build -t goemployee_crud:latest .
 	rm -f ${NAME}
 
-# https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9
 swagger-check:
 	which swagger || (GO111MODULE=off go get -d github.com/go-swagger/go-swagger/cmd/swagger)
 

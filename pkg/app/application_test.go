@@ -19,6 +19,7 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services/stubs"
 	"github.com/gorilla/mux"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -39,11 +40,12 @@ var (
 func InitServer(db_connection *sql.DB) {
 	App.Router = mux.NewRouter()
 	App.DbConnection = db_connection
-	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection)
+	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection, false)
 	App.EmployeeService = services.NewEmployeeService(App.EmployeeRepository)
 	App.EmployeeController = controllers.NewEmployeeController(App.EmployeeService)
+	App.OAuthService = stubs.NewOAuthServiceStub()
 
-	App.RegisterRoutes()
+	App.LoadConfiguration()
 }
 
 var employeeId = "1"
