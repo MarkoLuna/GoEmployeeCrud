@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:1.17-buster
 
 WORKDIR /dist
 
