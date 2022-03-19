@@ -42,7 +42,7 @@ func (eSrv OAuthService) HandleTokenGeneration(clientId string, clientSecret str
 		},
 	}
 
-	gen := generates.NewJWTAccessGenerate("", []byte(signingKey), jwt.SigningMethodHS512)
+	gen := generates.NewJWTAccessGenerate("", []byte(signingKey), jwt.SigningMethodHS256)
 	access, refresh, err := gen.Token(context.Background(), data, true)
 
 	if err != nil {

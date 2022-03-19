@@ -20,7 +20,7 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services/stubs"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
@@ -38,7 +38,7 @@ var (
 )
 
 func InitServer(db_connection *sql.DB) {
-	App.Router = mux.NewRouter()
+	App.EchoInstance = echo.New()
 	App.DbConnection = db_connection
 	App.EmployeeRepository = repositories.NewEmployeeRepository(App.DbConnection, false)
 	App.EmployeeService = services.NewEmployeeService(App.EmployeeRepository)

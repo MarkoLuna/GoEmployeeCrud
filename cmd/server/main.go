@@ -10,7 +10,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -24,7 +24,7 @@ func main() {
 }
 
 func ConfigureApp() {
-	App.Router = mux.NewRouter()
+	App.EchoInstance = echo.New()
 	if App.DbConnection == nil {
 		App.DbConnection = config.GetDB()
 	}

@@ -2,23 +2,23 @@ package routes
 
 import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 )
 
-func RegisterEmployeeStoreRoutes(router *mux.Router, employeeController *controllers.EmployeeController) {
+func RegisterEmployeeStoreRoutes(echoInstance *echo.Echo, employeeController *controllers.EmployeeController) {
 
-	router.HandleFunc("/api/employee/", employeeController.CreateEmployee).Methods("POST")
-	router.HandleFunc("/api/employee/", employeeController.GetEmployees).Methods("GET")
-	router.HandleFunc("/api/employee/{employeeId}", employeeController.GetEmployeeById).Methods("GET")
-	router.HandleFunc("/api/employee/{employeeId}", employeeController.UpdateEmployee).Methods("PUT")
-	router.HandleFunc("/api/employee/{employeeId}", employeeController.DeleteEmployee).Methods("DELETE")
+	echoInstance.POST("/api/employee/", employeeController.CreateEmployee)
+	echoInstance.GET("/api/employee/", employeeController.GetEmployees)
+	echoInstance.GET("/api/employee/:employeeId", employeeController.GetEmployeeById)
+	echoInstance.PUT("/api/employee/:employeeId", employeeController.UpdateEmployee)
+	echoInstance.DELETE("/api/employee/:employeeId", employeeController.DeleteEmployee)
 }
 
-func RegisterHealthcheckRoute(router *mux.Router) {
-	router.HandleFunc("/healthcheck/", controllers.HealthCheckHandler).Methods("GET")
+func RegisterHealthcheckRoute(echoInstance *echo.Echo) {
+	echoInstance.GET("/healthcheck/", controllers.HealthCheckHandler)
 }
 
-func RegisterOAuthRoutes(router *mux.Router, oauthController *controllers.OAuthController) {
-	router.HandleFunc("/oauth/token", oauthController.TokenHandler).Methods("POST")
-	router.HandleFunc("/oauth/userinfo", oauthController.GetUserInfo).Methods("GET")
+func RegisterOAuthRoutes(echoInstance *echo.Echo, oauthController *controllers.OAuthController) {
+	echoInstance.POST("/oauth/token", oauthController.TokenHandler)
+	echoInstance.GET("/oauth/userinfo", oauthController.GetUserInfo)
 }

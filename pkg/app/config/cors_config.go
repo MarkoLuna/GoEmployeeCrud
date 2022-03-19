@@ -3,24 +3,29 @@ package config
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func EnableCORS(router *mux.Router) {
-	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-	}).Methods(http.MethodOptions)
-
-	router.Use(middlewareCors)
-}
-
-func middlewareCors(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, req *http.Request) {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-			next.ServeHTTP(w, req)
-		})
+func EnableCORS(echoInstance *echo.Echo) {
+	echoInstance.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderAccept,
+			echo.HeaderContentType,
+			echo.HeaderContentLength,
+			echo.HeaderAcceptEncoding,
+			echo.HeaderAuthorization,
+			echo.HeaderXCSRFToken,
+		},
+		AllowCredentials: true,
+		AllowMethods: []string{
+			http.MethodPost,
+			http.MethodGet,
+			http.MethodOptions,
+			http.MethodPut,
+			http.MethodDelete,
+		},
+	}))
 }

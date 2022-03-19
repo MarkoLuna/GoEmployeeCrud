@@ -13,13 +13,13 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/routes"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 
 	"github.com/joho/godotenv"
 )
 
 type Application struct {
-	Router             *mux.Router
+	EchoInstance       *echo.Echo
 	DbConnection       *sql.DB
 	EmployeeService    services.EmployeeService
 	ClientService      services.ClientService
@@ -32,11 +32,8 @@ type Application struct {
 
 func (app *Application) LoadConfiguration() {
 	app.loadEnvValues()
-	routes.RegisterHealthcheckRoute(app.Router)
-	routes.RegisterEmployeeStoreRoutes(app.Router, &app.EmployeeController)
-	routes.RegisterOAuthRoutes(app.Router, &app.OAuthController)
-	config.EnableCORS(app.Router)
-	config.NewAuthConfig(app.Router, true, config.DefaultSkippedPaths[:], app.OAuthService)
+	config.EnableCORS(app.EchoInstance)
+	config.NewAuthConfig(app.EchoInstance, true, config.DefaultSkippedPaths[:], app.OAuthService)
 }
 
 func (app *Application) loadEnvValues() {
@@ -60,7 +57,9 @@ func (app *Application) Address() string {
 }
 
 func (app *Application) HandleRoutes() {
-	http.Handle("/", app.Router)
+	routes.RegisterHealthcheckRoute(app.EchoInstance)
+	routes.RegisterEmployeeStoreRoutes(app.EchoInstance, &app.EmployeeController)
+	routes.RegisterOAuthRoutes(app.EchoInstance, &app.OAuthController)
 }
 
 func (app *Application) StartServer() {
@@ -68,7 +67,7 @@ func (app *Application) StartServer() {
 	address := app.Address()
 	log.Println("Starting server on:", address)
 
-	log.Fatal(http.ListenAndServe(address, app.Router))
+	app.EchoInstance.Logger.Fatal(app.EchoInstance.Start(address))
 }
 
 func (app *Application) StartSecureServer() {
@@ -79,7 +78,10 @@ func (app *Application) StartSecureServer() {
 	path := "/Users/marcos.luna/go-projects/GoEmployeeCrud"
 	certFile := utils.GetEnv("SERVER_SSL_CERT_FILE_PATH", path+"/resources/ssl/cert.pem")
 	keyFile := utils.GetEnv("SERVER_SSL_KEY_FILE_PATH", path+"/resources/ssl/key.pem")
-	log.Fatal(http.ListenAndServeTLS(address, certFile, keyFile, app.Router))
+
+	if err := app.EchoInstance.StartTLS(address, certFile, keyFile); err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }
 
 func (app *Application) Run() {

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -23,9 +22,11 @@ func NewEmployeeController(employeeService services.EmployeeService) EmployeeCon
 	return EmployeeController{employeeService}
 }
 
-func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+func (eCtrl EmployeeController) CreateEmployee(c echo.Context) error {
 	employee := dto.EmployeeRequest{}
-	utils.ParseBody(r.Body, &employee)
+	if err := c.Bind(&employee); err != nil {
+		return err
+	}
 
 	v := utils.CreateValidator()
 	err := v.Struct(employee)
@@ -34,53 +35,42 @@ func (eCtrl EmployeeController) CreateEmployee(w http.ResponseWriter, r *http.Re
 		for _, e := range err.(validator.ValidationErrors) {
 			log.Println(e)
 		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return c.String(http.StatusBadRequest, "")
 	}
 
 	e, err := eCtrl.employeeService.CreateEmployee(employee)
 	if err != nil {
 		log.Fatalln(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.String(http.StatusInternalServerError, "")
 	}
 
-	res, _ := json.Marshal(e)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(res)
+	return c.JSON(http.StatusCreated, e)
 }
 
-func (eCtrl EmployeeController) GetEmployees(w http.ResponseWriter, r *http.Request) {
+func (eCtrl EmployeeController) GetEmployees(c echo.Context) error {
 	newEmployees, err := eCtrl.employeeService.GetEmployees()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return c.String(http.StatusInternalServerError, "")
 	}
 
-	res, _ := json.Marshal(newEmployees)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	return c.JSON(http.StatusOK, newEmployees)
 }
 
-func (eCtrl EmployeeController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	EmployeeId := vars["employeeId"]
-	EmployeeDetails, err := eCtrl.employeeService.GetEmployeeById(EmployeeId)
+func (eCtrl EmployeeController) GetEmployeeById(c echo.Context) error {
+	employeeId := c.Param("employeeId")
+	EmployeeDetails, err := eCtrl.employeeService.GetEmployeeById(employeeId)
 	if err == nil {
-		res, _ := json.Marshal(EmployeeDetails)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
+		return c.JSON(http.StatusOK, EmployeeDetails)
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		return c.String(http.StatusNotFound, "")
 	}
 }
 
-func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
+func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 	var updateEmployee = dto.EmployeeRequest{}
-	utils.ParseBody(r.Body, &updateEmployee)
+	if err := c.Bind(&updateEmployee); err != nil {
+		return err
+	}
 
 	log.Println("employee: " + updateEmployee.ToString())
 
@@ -91,32 +81,26 @@ func (eCtrl EmployeeController) UpdateEmployee(w http.ResponseWriter, r *http.Re
 		for _, e := range err.(validator.ValidationErrors) {
 			log.Println(e)
 		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return c.String(http.StatusNotFound, "")
 	}
 
-	vars := mux.Vars(r)
-	employeeId := vars["employeeId"]
+	employeeId := c.Param("employeeId")
 	employeeDetails, err := eCtrl.employeeService.UpdateEmployee(employeeId, updateEmployee)
 	if err == nil {
-		res, _ := json.Marshal(employeeDetails)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
+		return c.JSON(http.StatusOK, employeeDetails)
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		return c.String(http.StatusNotFound, "")
 	}
 }
 
-func (eCtrl EmployeeController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	employeeId := vars["employeeId"]
+func (eCtrl EmployeeController) DeleteEmployee(c echo.Context) error {
+	employeeId := c.Param("employeeId")
 
 	err := eCtrl.employeeService.DeleteEmployeeById(employeeId)
 	if err == nil {
-		w.WriteHeader(http.StatusOK)
+		return c.String(http.StatusOK, "")
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		return c.String(http.StatusNotFound, "")
 	}
 
 }

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -10,6 +9,8 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/server"
+
+	"github.com/labstack/echo/v4"
 )
 
 type OAuthController struct {
@@ -44,72 +45,59 @@ func (ctrl OAuthController) Configure() {
 	})
 }
 
-func (ctrl OAuthController) TokenHandler(w http.ResponseWriter, r *http.Request) {
-	auth, ok := ctrl.GetBasicAuth(r)
+func (ctrl OAuthController) TokenHandler(c echo.Context) error {
+	auth, ok := ctrl.GetBasicAuth(c.Request().Header)
 	if !ok {
-		http.Error(w, "Unable to find the Authentication", http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, "Unable to find the Authentication")
 	}
 
 	clientIdReq, clientSecretReq := ctrl.DecodeBasicAuth(auth)
 	validClientCred, err := ctrl.clientService.IsValidClientCredentials(clientIdReq, clientSecretReq)
 	if !validClientCred || err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, err.Error())
 	}
 
-	r.ParseForm()
-	userNameReq := r.FormValue("username")
-	passwordReq := r.FormValue("password")
+	userNameReq := c.FormValue("username")
+	passwordReq := c.FormValue("password")
 
 	userId, err := ctrl.userService.GetUserId(userNameReq, passwordReq)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, err.Error())
 	}
 
 	jWTResponse, err := ctrl.oauthSevice.HandleTokenGeneration(clientIdReq, clientSecretReq, userId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, err.Error())
 	}
 
-	res, _ := json.Marshal(jWTResponse)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	return c.JSON(http.StatusOK, jWTResponse)
 }
 
-func (ctrl OAuthController) GetUserInfo(w http.ResponseWriter, r *http.Request) {
-	accessToken, ok := ctrl.GetBearerAuth(r)
+func (ctrl OAuthController) GetUserInfo(c echo.Context) error {
+	accessToken, ok := ctrl.GetBearerAuth(c.Request().Header)
 	if !ok {
-		http.Error(w, "Unable to find the Authentication Token", http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, "Unable to find the Authentication")
 	}
 
 	log.Println("auth token: ", accessToken)
 	claims, err := ctrl.oauthSevice.ParseToken(accessToken)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
+		return c.String(http.StatusUnauthorized, err.Error())
 	}
 
-	res, _ := json.Marshal(claims)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	return c.JSON(http.StatusOK, claims)
 }
 
-func (ctrl OAuthController) GetBearerAuth(r *http.Request) (string, bool) {
-	return ctrl.GetAuthHeader(r, "Bearer ")
+func (ctrl OAuthController) GetBearerAuth(headers http.Header) (string, bool) {
+	return ctrl.GetAuthHeader(headers, "Bearer ")
 }
 
-func (ctrl OAuthController) GetBasicAuth(r *http.Request) (string, bool) {
-	return ctrl.GetAuthHeader(r, "Basic ")
+func (ctrl OAuthController) GetBasicAuth(headers http.Header) (string, bool) {
+	return ctrl.GetAuthHeader(headers, "Basic ")
 }
 
-func (ctrl OAuthController) GetAuthHeader(r *http.Request, prefix string) (string, bool) {
-	auth := r.Header.Get("Authorization")
+func (ctrl OAuthController) GetAuthHeader(headers http.Header, prefix string) (string, bool) {
+	auth := headers.Get("Authorization")
 	token := ""
 
 	if auth != "" && strings.HasPrefix(auth, prefix) {
