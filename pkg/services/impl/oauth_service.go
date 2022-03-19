@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -42,7 +41,7 @@ func (eSrv OAuthService) HandleTokenGeneration(clientId string, clientSecret str
 		},
 	}
 
-	gen := generates.NewJWTAccessGenerate("", []byte(signingKey), jwt.SigningMethodHS256)
+	gen := generates.NewJWTAccessGenerate("", []byte(signingKey), jwt.SigningMethodHS512)
 	access, refresh, err := gen.Token(context.Background(), data, true)
 
 	if err != nil {
@@ -60,7 +59,7 @@ func (eSrv OAuthService) HandleTokenGeneration(clientId string, clientSecret str
 	return jWTResponse, nil
 }
 
-func (oauthService OAuthService) ParseToken(accessToken string) (map[string]string, error) {
+func (oauthService OAuthService) ParseToken(accessToken string) (*jwt.Token, error) {
 
 	token, err := jwt.ParseWithClaims(accessToken, &generates.JWTAccessClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -68,6 +67,16 @@ func (oauthService OAuthService) ParseToken(accessToken string) (map[string]stri
 		}
 		return []byte(signingKey), nil
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func (oauthService OAuthService) GetTokenClaims(accessToken string) (map[string]string, error) {
+
+	token, err := oauthService.ParseToken(accessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -88,23 +97,20 @@ func (oauthService OAuthService) ParseToken(accessToken string) (map[string]stri
 
 func (oauthService OAuthService) IsAuthenticated(req *http.Request) (bool, error) {
 	if strings.HasPrefix(req.URL.Path, oauthService.AuthenticatedPath) {
-		ok, err := oauthService.ValidateToken(req)
+		accessToken, _ := GetBearerAuth(req)
+		ok, err := oauthService.IsValidToken(accessToken)
 		return ok && err != nil, err
 	}
 
 	return true, nil
 }
 
-func (oauthService OAuthService) ValidateToken(r *http.Request) (bool, error) {
-	accessToken, ok := GetBearerAuth(r)
-	if !ok {
-		return false, errors.New("unable to find the Authentication Token")
-	}
+func (oauthService OAuthService) IsValidToken(accessToken string) (bool, error) {
 
 	// Parse and verify jwt access token
 	token, err := jwt.ParseWithClaims(accessToken, &generates.JWTAccessClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("parse error")
+			return nil, fmt.Errorf("jwt parse error")
 		}
 		return []byte(signingKey), nil
 	})

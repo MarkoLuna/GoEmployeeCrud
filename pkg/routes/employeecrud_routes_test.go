@@ -14,12 +14,12 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/repositories"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRegisterEmployeeStoreRoutes(t *testing.T) {
-	router := mux.NewRouter()
+	// echoInstance = echo.New()
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
 	employeeService := services.NewEmployeeService(employeeRepository)
@@ -66,10 +66,10 @@ func TestRegisterEmployeeStoreRoutes(t *testing.T) {
 	}
 }
 
-func TestRegisterHealthcheckRoute(t *testing.T) {
-	router := mux.NewRouter()
+func TestRegisterHealthcheckRoute(t *testing.T) 
+	echoInstance := echo.New()
 
-	RegisterHealthcheckRoute(router)
+	RegisterHealthcheckRoute(echoInstance)
 
 	tables := []struct {
 		method   string

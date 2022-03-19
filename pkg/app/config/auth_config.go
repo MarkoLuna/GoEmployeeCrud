@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
@@ -39,10 +41,45 @@ func NewAuthConfig(echoInstance *echo.Echo, enableAuth bool, skippedPaths []stri
 			},
 			SigningMethod: middleware.AlgorithmHS256,
 			TokenLookup:   "header:" + echo.HeaderAuthorization,
+			ParseTokenFunc: func(auth string, c echo.Context) (interface{}, error) {
+
+				accessToken, ok := GetBearerAuth(c.Request().Header)
+				if !ok {
+					return nil, errors.New("invalid token")
+				}
+				token, err := authConfig.OAuthService.ParseToken(accessToken)
+				if err != nil {
+					return nil, err
+				}
+
+				if !token.Valid {
+					return nil, errors.New("invalid token")
+				}
+				return token, nil
+			},
 		}
 
 		echoInstance.Use(middleware.JWTWithConfig(defaultJWTConfig))
 	}
+}
+
+func GetBearerAuth(headers http.Header) (string, bool) {
+	return GetAuthHeader(headers, "Bearer ")
+}
+
+func GetBasicAuth(headers http.Header) (string, bool) {
+	return GetAuthHeader(headers, "Basic ")
+}
+
+func GetAuthHeader(headers http.Header, prefix string) (string, bool) {
+	auth := headers.Get("Authorization")
+	token := ""
+
+	if auth != "" && strings.HasPrefix(auth, prefix) {
+		token = auth[len(prefix):]
+	}
+
+	return token, token != ""
 }
 
 func (authConfig AuthConfig) isSkippedPath(path string) bool {

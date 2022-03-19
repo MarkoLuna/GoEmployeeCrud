@@ -46,6 +46,6 @@ func (oauthService OAuthServiceStub) IsAuthenticated(req *http.Request) (bool, e
 	return true, nil
 }
 
-func (oauthService OAuthServiceStub) ValidateToken(r *http.Request) (bool, error) {
+func (oauthService OAuthServiceStub) IsValidToken(accessToken string) (bool, error) {
 	return true, nil
 }
