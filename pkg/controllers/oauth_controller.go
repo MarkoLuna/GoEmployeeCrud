@@ -80,7 +80,7 @@ func (ctrl OAuthController) GetUserInfo(c echo.Context) error {
 	}
 
 	log.Println("auth token: ", accessToken)
-	claims, err := ctrl.oauthSevice.ParseToken(accessToken)
+	claims, err := ctrl.oauthSevice.GetTokenClaims(accessToken)
 	if err != nil {
 		return c.String(http.StatusUnauthorized, err.Error())
 	}
