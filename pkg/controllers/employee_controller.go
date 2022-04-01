@@ -40,8 +40,8 @@ func (eCtrl EmployeeController) CreateEmployee(c echo.Context) error {
 
 	e, err := eCtrl.employeeService.CreateEmployee(employee)
 	if err != nil {
-		log.Fatalln(err)
-		return c.String(http.StatusInternalServerError, "")
+		log.Println(err)
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusCreated, e)
@@ -50,7 +50,7 @@ func (eCtrl EmployeeController) CreateEmployee(c echo.Context) error {
 func (eCtrl EmployeeController) GetEmployees(c echo.Context) error {
 	newEmployees, err := eCtrl.employeeService.GetEmployees()
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "")
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusOK, newEmployees)
@@ -62,7 +62,7 @@ func (eCtrl EmployeeController) GetEmployeeById(c echo.Context) error {
 	if err == nil {
 		return c.JSON(http.StatusOK, EmployeeDetails)
 	} else {
-		return c.String(http.StatusNotFound, "")
+		return c.String(http.StatusNotFound, err.Error())
 	}
 }
 
@@ -81,7 +81,7 @@ func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 		for _, e := range err.(validator.ValidationErrors) {
 			log.Println(e)
 		}
-		return c.String(http.StatusNotFound, "")
+		return c.String(http.StatusNotFound, err.Error())
 	}
 
 	employeeId := c.Param("employeeId")
@@ -89,7 +89,7 @@ func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 	if err == nil {
 		return c.JSON(http.StatusOK, employeeDetails)
 	} else {
-		return c.String(http.StatusNotFound, "")
+		return c.String(http.StatusNotFound, err.Error())
 	}
 }
 
@@ -100,7 +100,7 @@ func (eCtrl EmployeeController) DeleteEmployee(c echo.Context) error {
 	if err == nil {
 		return c.String(http.StatusOK, "")
 	} else {
-		return c.String(http.StatusNotFound, "")
+		return c.String(http.StatusNotFound, err.Error())
 	}
 
 }
