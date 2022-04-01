@@ -96,6 +96,7 @@ func TestMain(m *testing.M) {
 	dbConnection = db
 	InitServer(dbConnection)
 	os.Setenv("SERVER_SSL_ENABLED", "false")
+	os.Setenv("OAUTH_ENABLED", "false")
 	go App.Run()
 
 	code := m.Run()

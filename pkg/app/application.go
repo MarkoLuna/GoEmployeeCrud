@@ -33,7 +33,10 @@ type Application struct {
 func (app *Application) LoadConfiguration() {
 	app.loadEnvValues()
 	config.EnableCORS(app.EchoInstance)
-	config.NewAuthConfig(app.EchoInstance, true, config.DefaultSkippedPaths[:], app.OAuthService)
+
+	server_auth_enabled := utils.GetEnv("OAUTH_ENABLED", "false")
+	auth_enabled, _ := strconv.ParseBool(server_auth_enabled)
+	config.NewAuthConfig(app.EchoInstance, auth_enabled, config.DefaultSkippedPaths[:], app.OAuthService)
 }
 
 func (app *Application) loadEnvValues() {
