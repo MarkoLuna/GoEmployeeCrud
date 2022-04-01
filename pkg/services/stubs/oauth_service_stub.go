@@ -7,11 +7,10 @@ import (
 )
 
 type OAuthServiceStub struct {
-	AuthenticatedPath string
 }
 
 func NewOAuthServiceStub() OAuthServiceStub {
-	return OAuthServiceStub{AuthenticatedPath: "/api/employee"}
+	return OAuthServiceStub{}
 }
 
 func (eSrv OAuthServiceStub) HandleTokenGeneration(clientId string, clientSecret string, userId string) (dto.JWTResponse, error) {

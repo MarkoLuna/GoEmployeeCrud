@@ -20,11 +20,10 @@ var (
 )
 
 type OAuthService struct {
-	AuthenticatedPath string
 }
 
 func NewOAuthService() OAuthService {
-	return OAuthService{AuthenticatedPath: "/api/employee"}
+	return OAuthService{}
 }
 
 func (eSrv OAuthService) HandleTokenGeneration(clientId string, clientSecret string, userId string) (dto.JWTResponse, error) {
@@ -96,13 +95,9 @@ func (oauthService OAuthService) GetTokenClaims(accessToken string) (map[string]
 }
 
 func (oauthService OAuthService) IsAuthenticated(req *http.Request) (bool, error) {
-	if strings.HasPrefix(req.URL.Path, oauthService.AuthenticatedPath) {
-		accessToken, _ := GetBearerAuth(req)
-		ok, err := oauthService.IsValidToken(accessToken)
-		return ok && err != nil, err
-	}
-
-	return true, nil
+	accessToken, _ := GetBearerAuth(req)
+	ok, err := oauthService.IsValidToken(accessToken)
+	return ok && err != nil, err
 }
 
 func (oauthService OAuthService) IsValidToken(accessToken string) (bool, error) {
