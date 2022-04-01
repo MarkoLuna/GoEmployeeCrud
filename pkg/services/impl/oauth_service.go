@@ -3,8 +3,6 @@ package impl
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"strings"
 	"time"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
@@ -13,6 +11,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -94,8 +93,8 @@ func (oauthService OAuthService) GetTokenClaims(accessToken string) (map[string]
 	return dataMap, nil
 }
 
-func (oauthService OAuthService) IsAuthenticated(req *http.Request) (bool, error) {
-	accessToken, _ := GetBearerAuth(req)
+func (oauthService OAuthService) IsAuthenticated(c echo.Context) (bool, error) {
+	accessToken, _ := utils.GetBearerAuth(c.Request().Header)
 	ok, err := oauthService.IsValidToken(accessToken)
 	return ok && err != nil, err
 }
@@ -118,19 +117,4 @@ func (oauthService OAuthService) IsValidToken(accessToken string) (bool, error) 
 		return false, err
 	}
 	return true, nil
-}
-
-func GetBearerAuth(r *http.Request) (string, bool) {
-	return GetAuthHeader(r, "Bearer ")
-}
-
-func GetAuthHeader(r *http.Request, prefix string) (string, bool) {
-	auth := r.Header.Get("Authorization")
-	token := ""
-
-	if auth != "" && strings.HasPrefix(auth, prefix) {
-		token = auth[len(prefix):]
-	}
-
-	return token, token != ""
 }

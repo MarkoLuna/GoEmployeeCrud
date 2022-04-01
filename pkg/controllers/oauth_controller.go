@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
+	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/server"
 
@@ -46,7 +47,7 @@ func (ctrl OAuthController) Configure() {
 }
 
 func (ctrl OAuthController) TokenHandler(c echo.Context) error {
-	auth, ok := ctrl.GetBasicAuth(c.Request().Header)
+	auth, ok := utils.GetBasicAuth(c.Request().Header)
 	if !ok {
 		return c.String(http.StatusUnauthorized, "Unable to find the Authentication")
 	}
@@ -74,7 +75,7 @@ func (ctrl OAuthController) TokenHandler(c echo.Context) error {
 }
 
 func (ctrl OAuthController) GetUserInfo(c echo.Context) error {
-	accessToken, ok := ctrl.GetBearerAuth(c.Request().Header)
+	accessToken, ok := utils.GetBearerAuth(c.Request().Header)
 	if !ok {
 		return c.String(http.StatusUnauthorized, "Unable to find the Authentication")
 	}
@@ -86,25 +87,6 @@ func (ctrl OAuthController) GetUserInfo(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, claims)
-}
-
-func (ctrl OAuthController) GetBearerAuth(headers http.Header) (string, bool) {
-	return ctrl.GetAuthHeader(headers, "Bearer ")
-}
-
-func (ctrl OAuthController) GetBasicAuth(headers http.Header) (string, bool) {
-	return ctrl.GetAuthHeader(headers, "Basic ")
-}
-
-func (ctrl OAuthController) GetAuthHeader(headers http.Header, prefix string) (string, bool) {
-	auth := headers.Get("Authorization")
-	token := ""
-
-	if auth != "" && strings.HasPrefix(auth, prefix) {
-		token = auth[len(prefix):]
-	}
-
-	return token, token != ""
 }
 
 func (ctrl OAuthController) DecodeBasicAuth(auth string) (string, string) {
