@@ -7,11 +7,12 @@ import (
 
 func RegisterEmployeeStoreRoutes(echoInstance *echo.Echo, employeeController *controllers.EmployeeController) {
 
-	echoInstance.POST("/api/employee/", employeeController.CreateEmployee)
-	echoInstance.GET("/api/employee/", employeeController.GetEmployees)
-	echoInstance.GET("/api/employee/:employeeId", employeeController.GetEmployeeById)
-	echoInstance.PUT("/api/employee/:employeeId", employeeController.UpdateEmployee)
-	echoInstance.DELETE("/api/employee/:employeeId", employeeController.DeleteEmployee)
+	employeeGroup := echoInstance.Group("/api/employee")
+	employeeGroup.POST("/", employeeController.CreateEmployee)
+	employeeGroup.GET("/", employeeController.GetEmployees)
+	employeeGroup.GET("/:employeeId", employeeController.GetEmployeeById)
+	employeeGroup.PUT("/:employeeId", employeeController.UpdateEmployee)
+	employeeGroup.DELETE("/:employeeId", employeeController.DeleteEmployee)
 }
 
 func RegisterHealthcheckRoute(echoInstance *echo.Echo) {
@@ -19,6 +20,7 @@ func RegisterHealthcheckRoute(echoInstance *echo.Echo) {
 }
 
 func RegisterOAuthRoutes(echoInstance *echo.Echo, oauthController *controllers.OAuthController) {
-	echoInstance.POST("/oauth/token", oauthController.TokenHandler)
-	echoInstance.GET("/oauth/userinfo", oauthController.GetUserInfo)
+	oauthGroup := echoInstance.Group("/oauth")
+	oauthGroup.POST("/token", oauthController.TokenHandler)
+	oauthGroup.GET("/userinfo", oauthController.GetUserInfo)
 }
