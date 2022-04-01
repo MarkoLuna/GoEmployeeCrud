@@ -69,8 +69,7 @@ func (app *Application) StartServer() {
 	app.HandleRoutes()
 	address := app.Address()
 	log.Println("Starting server on:", address)
-
-	app.EchoInstance.Logger.Fatal(app.EchoInstance.Start(address))
+	log.Fatal(app.EchoInstance.Start(address))
 }
 
 func (app *Application) StartSecureServer() {
