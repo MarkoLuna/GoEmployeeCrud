@@ -1,9 +1,9 @@
 package stubs
 
 import (
-	"net/http"
-
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/dto"
+	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
 )
 
 type OAuthServiceStub struct {
@@ -29,22 +29,21 @@ func (eSrv OAuthServiceStub) HandleTokenGeneration(clientId string, clientSecret
 	return jWTResponse, nil
 }
 
-func (oauthService OAuthServiceStub) ParseToken(accessToken string) (map[string]string, error) {
+func (oauthService OAuthServiceStub) ParseToken(accessToken string) (*jwt.Token, error) {
 
-	dataMap := make(map[string]string)
-	dataMap["subject"] = "000000"
-	dataMap["audience"] = "client"
-	dataMap["id"] = ""
-	dataMap["issuer"] = ""
-
-	return dataMap, nil
+	token := jwt.Token{}
+	return &token, nil
 }
 
-func (oauthService OAuthServiceStub) IsAuthenticated(req *http.Request) (bool, error) {
-
+func (oauthService OAuthServiceStub) IsAuthenticated(c echo.Context) (bool, error) {
 	return true, nil
 }
 
 func (oauthService OAuthServiceStub) IsValidToken(accessToken string) (bool, error) {
 	return true, nil
+}
+
+func (oauthService OAuthServiceStub) GetTokenClaims(accessToken string) (map[string]string, error) {
+	claims := make(map[string]string)
+	return claims, nil
 }
