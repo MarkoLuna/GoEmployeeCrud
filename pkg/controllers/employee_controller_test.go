@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/constants"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/models"
@@ -24,34 +24,38 @@ func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := NewEmployeeController(employeeService)
 
+	e := echo.New()
+
 	req, err := http.NewRequest("GET", "/api/employee/", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(employeeController.GetEmployees)
 
-	handler.ServeHTTP(rr, req)
+	c := e.NewContext(req, rr)
+	if assert.NoError(t, employeeController.GetEmployees(c)) {
 
-	assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
-	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
+		assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+		assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
-	employeesSlice := make([]models.Employee, 0)
-	err = json.Unmarshal(rr.Body.Bytes(), &employeesSlice)
-	assert.NoError(t, err)
+		employeesSlice := make([]models.Employee, 0)
+		err = json.Unmarshal(rr.Body.Bytes(), &employeesSlice)
+		assert.NoError(t, err)
 
-	assert.Equal(t, 2, len(employeesSlice), "handler returned unexpected body: got empty")
+		assert.Equal(t, 2, len(employeesSlice), "handler returned unexpected body: got empty")
 
-	employee1 := employeesSlice[0]
-	employee2 := employeesSlice[1]
+		employee1 := employeesSlice[0]
+		employee2 := employeesSlice[1]
 
-	assert.NotNil(t, employee1)
-	assert.NotNil(t, employee2)
+		assert.NotNil(t, employee1)
+		assert.NotNil(t, employee2)
 
-	fmt.Println(employee1)
-	fmt.Println(employee2)
+		fmt.Println(employee1)
+		fmt.Println(employee2)
 
-	assert.Equal(t, "1", employee1.Id, "id employee returned is wrong")
-	assert.Equal(t, "2", employee2.Id, "id employee returned is wrong")
+		assert.Equal(t, "1", employee1.Id, "id employee returned is wrong")
+		assert.Equal(t, "2", employee2.Id, "id employee returned is wrong")
+	}
 }
 
 func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
@@ -59,6 +63,8 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := NewEmployeeController(employeeService)
+
+	e := echo.New()
 
 	var employee models.Employee
 	employee.FirstName = "Marcos"
@@ -75,21 +81,22 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(employeeController.CreateEmployee)
+	c := e.NewContext(req, rr)
 
-	handler.ServeHTTP(rr, req)
+	if assert.NoError(t, employeeController.CreateEmployee(c)) {
 
-	assert.Equal(t, http.StatusCreated, rr.Code, "handler returned wrong status code")
-	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
+		assert.Equal(t, http.StatusCreated, rr.Code, "handler returned wrong status code")
+		assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
-	employeeResponse := models.Employee{}
-	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
+		employeeResponse := models.Employee{}
+		err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, employeeResponse)
-	fmt.Println(employeeResponse)
+		assert.NoError(t, err)
+		assert.NotNil(t, employeeResponse)
+		fmt.Println(employeeResponse)
 
-	assert.Equal(t, employee.FirstName, employeeResponse.FirstName, "FirstName employee returned is wrong")
+		assert.Equal(t, employee.FirstName, employeeResponse.FirstName, "FirstName employee returned is wrong")
+	}
 }
 
 func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
@@ -98,30 +105,33 @@ func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := NewEmployeeController(employeeService)
 
-	req, err := http.NewRequest("GET", "/api/employee/1", nil)
-	assert.NoError(t, err)
+	e := echo.New()
 
-	req = mux.SetURLVars(req, map[string]string{
-		"employeeId": "1",
-	})
+	req, err := http.NewRequest("GET", "/api/employee/1", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(employeeController.GetEmployeeById)
+	c := e.NewContext(req, rr)
 
-	handler.ServeHTTP(rr, req)
+	c.SetPath("/api/employee/:employeeId")
+	c.SetParamNames("employeeId")
+	c.SetParamValues("1")
 
-	assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
-	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
+	if assert.NoError(t, employeeController.GetEmployeeById(c)) {
+		assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+		assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
-	employeeResponse := models.Employee{}
-	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
+		employeeResponse := models.Employee{}
+		err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
-	assert.NoError(t, err)
+		assert.NoError(t, err)
 
-	assert.NotNil(t, employeeResponse)
-	fmt.Println(employeeResponse)
+		assert.NotNil(t, employeeResponse)
+		fmt.Println(employeeResponse)
 
-	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
+		assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
+	}
 }
 
 func TestEmployeeController_UpdateEmployee(t *testing.T) {
@@ -129,6 +139,8 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := NewEmployeeController(employeeService)
+
+	e := echo.New()
 
 	var employee models.Employee
 	employee.Id = "1"
@@ -141,29 +153,30 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 
 	jsonStr, _ := json.Marshal(employee)
 	req, err := http.NewRequest("PUT", "/api/employee/1", bytes.NewBuffer(jsonStr))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	assert.NoError(t, err)
-
-	req = mux.SetURLVars(req, map[string]string{
-		"employeeId": "1",
-	})
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(employeeController.UpdateEmployee)
+	c := e.NewContext(req, rr)
 
-	handler.ServeHTTP(rr, req)
+	c.SetPath("/api/employee/:employeeId")
+	c.SetParamNames("employeeId")
+	c.SetParamValues("1")
 
-	assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
-	assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
+	if assert.NoError(t, employeeController.UpdateEmployee(c)) {
+		assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+		assert.NotEqual(t, 0, len(rr.Body.String()), "handler returned unexpected body: got empty")
 
-	employeeResponse := models.Employee{}
-	err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
+		employeeResponse := models.Employee{}
+		err = json.Unmarshal(rr.Body.Bytes(), &employeeResponse)
 
-	assert.NoError(t, err)
+		assert.NoError(t, err)
 
-	assert.NotNil(t, employeeResponse)
-	fmt.Println(employeeResponse)
+		assert.NotNil(t, employeeResponse)
+		fmt.Println(employeeResponse)
 
-	assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
+		assert.Equal(t, "1", employeeResponse.Id, "id employee returned is wrong")
+	}
 }
 
 func TestEmployeeController_DeleteEmployee(t *testing.T) {
@@ -172,17 +185,20 @@ func TestEmployeeController_DeleteEmployee(t *testing.T) {
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := NewEmployeeController(employeeService)
 
+	e := echo.New()
+
 	req, err := http.NewRequest("DELETE", "/api/employee/1", nil)
 	assert.NoError(t, err)
 
-	req = mux.SetURLVars(req, map[string]string{
-		"employeeId": "1",
-	})
-
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(employeeController.DeleteEmployee)
+	c := e.NewContext(req, rr)
 
-	handler.ServeHTTP(rr, req)
+	c.SetPath("/api/employee/:employeeId")
+	c.SetParamNames("employeeId")
+	c.SetParamValues("1")
 
-	assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+	if assert.NoError(t, employeeController.DeleteEmployee(c)) {
+		assert.Equal(t, http.StatusOK, rr.Code, "handler returned wrong status code")
+	}
+
 }
