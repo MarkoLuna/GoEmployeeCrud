@@ -19,13 +19,13 @@ import (
 )
 
 func TestRegisterEmployeeStoreRoutes(t *testing.T) {
-	// echoInstance = echo.New()
+	echoInstance := echo.New()
 
 	employeeRepository := repositories.NewEmployeeRepositoryStub()
 	employeeService := services.NewEmployeeService(employeeRepository)
 	employeeController := controllers.NewEmployeeController(employeeService)
 
-	RegisterEmployeeStoreRoutes(router, &employeeController)
+	RegisterEmployeeStoreRoutes(echoInstance, &employeeController)
 
 	var employee dto.EmployeeRequest
 	employee.FirstName = "Marcos"
@@ -38,37 +38,35 @@ func TestRegisterEmployeeStoreRoutes(t *testing.T) {
 	jsonStr, _ := json.Marshal(employee)
 
 	tables := []struct {
-		method string
-		path   string
-		body   io.Reader
-		status int
+		method  string
+		path    string
+		body    io.Reader
+		status  int
+		handler func(c echo.Context) error
 	}{
-		{"GET", "/api/employee/", nil, http.StatusOK},
-		{"POST", "/api/employee/", bytes.NewBuffer(jsonStr), http.StatusCreated},
-		{"GET", "/api/employee/1", nil, http.StatusOK},
-		{"PUT", "/api/employee/1", bytes.NewBuffer(jsonStr), http.StatusOK},
-		{"DELETE", "/api/employee/1", nil, http.StatusOK},
-		{"GET", "/api/employe/", nil, http.StatusNotFound},
-		{"POST", "/api/employe/", bytes.NewBuffer(jsonStr), http.StatusNotFound},
-		{"GET", "/api/employe/1", nil, http.StatusNotFound},
-		{"PUT", "/api/employe/1", bytes.NewBuffer(jsonStr), http.StatusNotFound},
-		{"DELETE", "/api/employe/1", nil, http.StatusNotFound},
+		{"GET", "/api/employee/", nil, http.StatusOK, employeeController.GetEmployees},
+		{"POST", "/api/employee/", bytes.NewBuffer(jsonStr), http.StatusCreated, employeeController.CreateEmployee},
+		{"GET", "/api/employee/1", nil, http.StatusOK, employeeController.GetEmployeeById},
+		{"PUT", "/api/employee/1", bytes.NewBuffer(jsonStr), http.StatusOK, employeeController.UpdateEmployee},
+		{"DELETE", "/api/employee/1", nil, http.StatusOK, employeeController.DeleteEmployee},
 	}
 
 	for _, table := range tables {
 		req, err := http.NewRequest(table.method, table.path, table.body)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		c := echoInstance.NewContext(req, rr)
 
-		assert.Equal(t, table.status, rr.Code, "handler returned wrong status code")
+		if assert.NoError(t, table.handler(c)) {
+			assert.Equal(t, table.status, rr.Code, "handler returned wrong status code")
+		}
 	}
 }
 
-func TestRegisterHealthcheckRoute(t *testing.T) 
+func TestRegisterHealthcheckRoute(t *testing.T) {
 	echoInstance := echo.New()
-
 	RegisterHealthcheckRoute(echoInstance)
 
 	tables := []struct {
@@ -78,7 +76,6 @@ func TestRegisterHealthcheckRoute(t *testing.T)
 		status   int
 	}{
 		{"GET", "/healthcheck/", `OK`, http.StatusOK},
-		{"GET", "/healthchec/", "", http.StatusNotFound},
 	}
 
 	for _, table := range tables {
@@ -86,10 +83,9 @@ func TestRegisterHealthcheckRoute(t *testing.T)
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
-		router.ServeHTTP(rr, req)
+		c := echoInstance.NewContext(req, rr)
 
-		assert.Equal(t, table.status, rr.Code, "handler returned wrong status code")
-		if table.response != "" {
+		if assert.NoError(t, controllers.HealthCheckHandler(c)) {
 			assert.Equal(t, table.response, rr.Body.String(), "handler returned unexpected body")
 		}
 	}
