@@ -2,6 +2,9 @@
 NAME=employeeCrudApp
 PROJECT?=github.com/MarkoLuna/GoEmployeeCrud
 
+verify:
+	go mod verify
+
 build:
 	go build -o ${NAME} "${PROJECT}/cmd/server"
 
