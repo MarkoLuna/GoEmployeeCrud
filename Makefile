@@ -2,10 +2,13 @@
 NAME=employeeCrudApp
 PROJECT?=github.com/MarkoLuna/GoEmployeeCrud
 
+swagger-build:
+	swag init --dir pkg
+
 verify:
 	go mod verify
 
-build:
+build: swagger-build
 	go build -mod readonly -o ${NAME} "${PROJECT}/pkg"
 
 test:

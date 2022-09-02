@@ -11,12 +11,34 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
 	"github.com/labstack/echo/v4"
+
+	_ "github.com/MarkoLuna/GoEmployeeCrud/docs"
 )
 
 var (
 	App = app.Application{}
 )
 
+// @title Employee Crud API
+// @version 1.0
+// @description This app is responsable for a CRUD for Employees.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email josemarcosluna9@gmail.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.basic BasicAuth
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	ConfigureApp()
 	defer App.DbConnection.Close()

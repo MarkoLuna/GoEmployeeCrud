@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/app/config"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/controllers"
@@ -14,6 +15,9 @@ import (
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/services"
 	"github.com/MarkoLuna/GoEmployeeCrud/pkg/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"github.com/joho/godotenv"
 )
@@ -60,6 +64,15 @@ func (app *Application) Address() string {
 }
 
 func (app *Application) HandleRoutes() {
+	app.EchoInstance.GET("/swagger/*", echoSwagger.WrapHandler)
+	app.EchoInstance.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Skipper: func(c echo.Context) bool {
+			if strings.Contains(c.Request().URL.Path, "swagger") {
+				return true
+			}
+			return false
+		},
+	}))
 	routes.RegisterHealthcheckRoute(app.EchoInstance)
 	routes.RegisterEmployeeStoreRoutes(app.EchoInstance, &app.EmployeeController)
 	routes.RegisterOAuthRoutes(app.EchoInstance, &app.OAuthController)

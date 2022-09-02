@@ -22,6 +22,17 @@ func NewEmployeeController(employeeService services.EmployeeService) EmployeeCon
 	return EmployeeController{employeeService}
 }
 
+// CreateEmployee EmployeeApi
+// @Tags 	EmployeeApi
+// @Summary create-employee
+// @Description Add a new employee to the database
+// @Accept  json
+// @Produce  json
+// @Param   employee-details      body dto.EmployeeRequest true  "Some ID"
+// @Success 200 {string} string	"ok"
+// @Failure 400 {object} error "Invalid request!!"
+// @Security ApiKeyAuth
+// @Router /api/employee/ [post]
 func (eCtrl EmployeeController) CreateEmployee(c echo.Context) error {
 	employee := dto.EmployeeRequest{}
 	if err := c.Bind(&employee); err != nil {
@@ -56,6 +67,17 @@ func (eCtrl EmployeeController) GetEmployees(c echo.Context) error {
 	return c.JSON(http.StatusOK, newEmployees)
 }
 
+// GetEmployee EmployeeApi
+// @Tags 	EmployeeApi
+// @Summary get-employee
+// @Description Get employee from the database
+// @Accept  json
+// @Produce  json
+// @Param   employeeId      path string true  "Employee ID"
+// @Success 200 {object} models.Employee	"ok"
+// @Failure 400 {object} error "Invalid request!!"
+// @Security ApiKeyAuth
+// @Router /api/employee/{employeeId} [get]
 func (eCtrl EmployeeController) GetEmployeeById(c echo.Context) error {
 	employeeId := c.Param("employeeId")
 	EmployeeDetails, err := eCtrl.employeeService.GetEmployeeById(employeeId)
@@ -66,6 +88,18 @@ func (eCtrl EmployeeController) GetEmployeeById(c echo.Context) error {
 	}
 }
 
+// UpdateEmployee EmployeeApi
+// @Tags 	EmployeeApi
+// @Summary update-employee
+// @Description Update employee
+// @Accept  json
+// @Produce  json
+// @Param   employeeId      path string true  "Employee ID"
+// @Param   employee-details      body dto.EmployeeRequest true  "Some ID"
+// @Success 200 {object} models.Employee	"ok"
+// @Failure 400 {object} error "Invalid request!!"
+// @Security ApiKeyAuth
+// @Router /api/employee/{employeeId} [put]
 func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 	var updateEmployee = dto.EmployeeRequest{}
 	if err := c.Bind(&updateEmployee); err != nil {
@@ -93,6 +127,17 @@ func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 	}
 }
 
+// DeleteEmployee EmployeeApi
+// @Tags 	EmployeeApi
+// @Summary delete-employee
+// @Description Get employee from the database
+// @Accept  json
+// @Produce  json
+// @Param   employeeId      path string true  "Employee ID"
+// @Success 200 {string} string	"ok"
+// @Failure 400 {object} error "Invalid request!!"
+// @Security ApiKeyAuth
+// @Router /api/employee/{employeeId} [delete]
 func (eCtrl EmployeeController) DeleteEmployee(c echo.Context) error {
 	employeeId := c.Param("employeeId")
 

@@ -13,6 +13,8 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/stretchr/testify v1.7.0
+	github.com/swaggo/echo-swagger v1.3.4
+	github.com/swaggo/swag v1.8.5
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 )

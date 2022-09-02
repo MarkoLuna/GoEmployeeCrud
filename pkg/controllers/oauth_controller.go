@@ -46,6 +46,19 @@ func (ctrl OAuthController) Configure() {
 	})
 }
 
+// Login auth
+// @Tags 	Auth
+// @Summary login user
+// @Description login user
+// @Accept  json
+// @Produce  json
+// @Param   password      query string true  "Password"
+// @Param   username      query string true  "Username"
+// @Param   grant_type      path string true  "Grant type"
+// @Success 200 {object} dto.JWTResponse	"ok"
+// @Failure 400 {object} error "Invalid authorization!!"
+// @Security BasicAuth
+// @Router /oauth/token [post]
 func (ctrl OAuthController) TokenHandler(c echo.Context) error {
 	auth, ok := utils.GetBasicAuth(c.Request().Header)
 	if !ok {
@@ -74,6 +87,16 @@ func (ctrl OAuthController) TokenHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, jWTResponse)
 }
 
+// GetUserInfo auth
+// @Tags 	Auth
+// @Summary get-user-info
+// @Description get user info
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string	"ok"
+// @Failure 400 {object} error "Invalid authorization!!"
+// @Security ApiKeyAuth
+// @Router /oauth/userinfo [get]
 func (ctrl OAuthController) GetUserInfo(c echo.Context) error {
 	accessToken, ok := utils.GetBearerAuth(c.Request().Header)
 	if !ok {

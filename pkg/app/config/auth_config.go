@@ -15,6 +15,7 @@ var (
 	DefaultSkippedPaths = [...]string{
 		"/healthcheck/",
 		"/oauth/token",
+		"/swagger/",
 	}
 )
 
