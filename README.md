@@ -3,6 +3,7 @@
 Employee Crud Rest API using Golang
 
 ## Install deps
+
 ```bash
 $ go mod download
 ```
@@ -10,7 +11,7 @@ $ go mod download
 ## Run on local
 
 ```
-$ go run cmd/server/main.go
+$ go run pkg/main.go
 ```
 
 Or with make

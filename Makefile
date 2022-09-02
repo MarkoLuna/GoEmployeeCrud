@@ -6,7 +6,7 @@ verify:
 	go mod verify
 
 build:
-	go build -o ${NAME} "${PROJECT}/cmd/server"
+	go build -mod readonly -o ${NAME} "${PROJECT}/pkg"
 
 test:
 	go test -race "${PROJECT}/..."
@@ -30,7 +30,7 @@ clean:
 	rm -f ${NAME}
 
 docker-build:
-	GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${NAME} "${PROJECT}/cmd/server"
+	GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${NAME} "${PROJECT}/pkg"
 	docker build -t goemployee_crud:latest .
 	rm -f ${NAME}
 
