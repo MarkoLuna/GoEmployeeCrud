@@ -58,6 +58,16 @@ func (eCtrl EmployeeController) CreateEmployee(c echo.Context) error {
 	return c.JSON(http.StatusCreated, e)
 }
 
+// GetEmployees EmployeeApi
+// @Tags 	EmployeeApi
+// @Summary get-employees
+// @Description Get employees from the database
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []models.Employee	"ok"
+// @Failure 400 {object} error "Invalid request!!"
+// @Security ApiKeyAuth
+// @Router /api/employee/ [get]
 func (eCtrl EmployeeController) GetEmployees(c echo.Context) error {
 	newEmployees, err := eCtrl.employeeService.GetEmployees()
 	if err != nil {
@@ -130,7 +140,7 @@ func (eCtrl EmployeeController) UpdateEmployee(c echo.Context) error {
 // DeleteEmployee EmployeeApi
 // @Tags 	EmployeeApi
 // @Summary delete-employee
-// @Description Get employee from the database
+// @Description Delete employee from the database
 // @Accept  json
 // @Produce  json
 // @Param   employeeId      path string true  "Employee ID"

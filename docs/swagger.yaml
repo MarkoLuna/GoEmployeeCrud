@@ -91,6 +91,27 @@ info:
   version: "1.0"
 paths:
   /api/employee/:
+    get:
+      consumes:
+      - application/json
+      description: Get employees from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/models.Employee'
+            type: array
+        "400":
+          description: Invalid request!!
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: get-employees
+      tags:
+      - EmployeeApi
     post:
       consumes:
       - application/json
@@ -121,7 +142,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Get employee from the database
+      description: Delete employee from the database
       parameters:
       - description: Employee ID
         in: path

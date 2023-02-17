@@ -26,6 +26,39 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/employee/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get employees from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EmployeeApi"
+                ],
+                "summary": "get-employees",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Employee"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request!!",
+                        "schema": {}
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -162,7 +195,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get employee from the database",
+                "description": "Delete employee from the database",
                 "consumes": [
                     "application/json"
                 ],
