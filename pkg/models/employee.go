@@ -9,7 +9,7 @@ import (
 )
 
 type Employee struct {
-	Id               string                   `json:"firstName" swaggertype:"string" example:"b836ce65-76ab-42c8-b7b8-63ed432963c2"`
+	Id               string                   `json:"id" swaggertype:"string" example:"b836ce65-76ab-42c8-b7b8-63ed432963c2"`
 	FirstName        string                   `json:"firstName" validate:"required" swaggertype:"string" example:"Marcos"`
 	LastName         string                   `json:"lastName" validate:"required" swaggertype:"string" example:"Luna"`
 	SecondLastName   string                   `json:"secondLastName" validate:"required" swaggertype:"string" example:"Valdez"`

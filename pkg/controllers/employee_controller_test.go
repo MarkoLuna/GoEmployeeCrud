@@ -26,7 +26,7 @@ func TestEmployeeController_GetEmployeesEmployees(t *testing.T) {
 
 	e := echo.New()
 
-	req, err := http.NewRequest("GET", "/api/employee/", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/employee/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	assert.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestEmployeeController_CreateEmployeeEmployee(t *testing.T) {
 	employee.Status = constants.ACTIVE
 
 	jsonStr, _ := json.Marshal(employee)
-	req, err := http.NewRequest("POST", "/api/employee/", bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest(http.MethodPost, "/api/employee/", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	assert.NoError(t, err)
@@ -107,7 +107,7 @@ func TestEmployeeController_GetEmployeeByIdEmployee(t *testing.T) {
 
 	e := echo.New()
 
-	req, err := http.NewRequest("GET", "/api/employee/1", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/employee/1", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	assert.NoError(t, err)
 
@@ -152,7 +152,7 @@ func TestEmployeeController_UpdateEmployee(t *testing.T) {
 	employee.Status = constants.ACTIVE
 
 	jsonStr, _ := json.Marshal(employee)
-	req, err := http.NewRequest("PUT", "/api/employee/1", bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest(http.MethodPut, "/api/employee/1", bytes.NewBuffer(jsonStr))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	assert.NoError(t, err)
 
@@ -187,7 +187,7 @@ func TestEmployeeController_DeleteEmployee(t *testing.T) {
 
 	e := echo.New()
 
-	req, err := http.NewRequest("DELETE", "/api/employee/1", nil)
+	req, err := http.NewRequest(http.MethodDelete, "/api/employee/1", nil)
 	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
