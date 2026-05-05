@@ -20,7 +20,7 @@ This project provides a complete CRUD (Create, Read, Update, Delete) API for man
 
 ## Requirements
 
-- Go 1.15+
+- Go 1.25+
 - PostgreSQL
 - Docker (optional)
 - Kubernetes (optional)
@@ -208,7 +208,7 @@ make k8-remove
 
 ## Technology Stack
 
-- **Language**: Go 1.15+
+- **Language**: Go 1.25+
 - **Web Framework**: Gorilla Mux
 - **Database**: PostgreSQL
 - **Authentication**: JWT

@@ -1,4 +1,3 @@
-version: '2'
 services:
     users_crud:
         image: goemployee_crud:latest
